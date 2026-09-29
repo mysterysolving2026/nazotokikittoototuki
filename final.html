@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>最終問題</title>
+  <style>
+    body {
+      font-family: "MS Mincho", "Hiragino Mincho ProN", serif;
+      text-align: center;
+      margin-top: 60px;
+    }
+    .timer {
+      font-size: 36px;
+      margin-bottom: 20px;
+    }
+    .question {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+    .input-box {
+      width: 200px;
+      font-size: 18px;
+      padding: 4px;
+      text-align: center;
+    }
+    button {
+      font-family: "MS Mincho", "Hiragino Mincho ProN", serif;
+      font-size: 18px;
+      padding: 6px 12px;
+      margin-top: 8px;
+      background-color: #4B0082;
+      color: white;
+      border: 2px solid black;
+    }
+    .message {
+      font-size: 22px;
+      margin-top: 15px;
+      color: green;
+    }
+    .error {
+      color: red;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="timer" class="timer"></div>
+
+  <div class="question">これまでの軌跡を振り返って隠された数字を見つけよ。</div>
+  <input id="finalInput" class="input-box" placeholder="数字を入力">
+  <br>
+  <button onclick="checkFinal()">決定</button>
+
+  <div id="msg" class="message"></div>
+  <div id="err" class="error"></div>
+
+  <div id="pdfLink" style="margin-top:20px;"></div>
+
+  <script>
+    function initTimer() {
+      if (localStorage.getItem("bombCleared") === "true") {
+        document.getElementById("timer").textContent = "";
+        return;
+      }
+
+      if (!localStorage.getItem("endTime")) {
+        const end = Date.now() + 10 * 60 * 1000;
+        localStorage.setItem("endTime", end);
+      }
+      updateTimer();
+      setInterval(updateTimer, 1000);
+    }
+
+    function updateTimer() {
+      if (localStorage.getItem("bombCleared") === "true") return;
+
+      const endTime = Number(localStorage.getItem("endTime"));
+      const now = Date.now();
+      const remaining = Math.floor((endTime - now) / 1000);
+
+      if (remaining <= 0) {
+        window.location.href = "gameover.html";
+        return;
+      }
+      const m = String(Math.floor(remaining / 60)).padStart(2, "0");
+      const s = String(remaining % 60).padStart(2, "0");
+      document.getElementById("timer").textContent = m + ":" + s;
+    }
+
+    initTimer();
+
+    function checkFinal() {
+      const v = document.getElementById("finalInput").value.trim();
+      if (v === "1013") {
+        localStorage.setItem("bombCleared", "true");
+        document.getElementById("msg").textContent = "爆弾解除　おめでとう";
+        document.getElementById("err").textContent = "";
+        document.getElementById("pdfLink").innerHTML =
+          '<a href="file:///C:/Users/kaho%20owner/OneDrive%20-%20%E4%B8%89%E9%87%8D%E5%A4%A7%E5%AD%A6/3%E5%B9%B4/%E7%AB%B6%E6%8A%80%E3%81%8B%E3%82%8B%E3%81%9F(%E5%AD%A6%E7%A5%AD%E4%BB%A5%E5%A4%96)/%E8%B3%9E%E7%8A%B69%E6%9C%8817%E6%97%A5%E3%81%8B%E3%82%8B%E3%81%9F%E5%A4%A7%E4%BC%9A.pdf" target="_blank">PDFを見る</a>';
+      } else {
+        document.getElementById("msg").textContent = "";
+        document.getElementById("err").textContent = "間違っています";
+      }
+    }
+  </script>
+
+</body>
+</html>
