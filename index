@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>爆弾解除ゲーム - 小謎</title>
+  <style>
+    body {
+      font-family: "MS Mincho", "Hiragino Mincho ProN", serif;
+      text-align: center;
+      margin-top: 40px;
+    }
+    .timer {
+      font-size: 40px;
+      margin: 10px 0;
+    }
+    .question {
+      margin-top: 20px;
+      font-size: 20px;
+    }
+    .input-box {
+      width: 200px;
+      font-size: 18px;
+      padding: 4px;
+      text-align: center;
+    }
+    button {
+      font-family: "MS Mincho", "Hiragino Mincho ProN", serif;
+      font-size: 18px;
+      padding: 6px 12px;
+      margin-top: 8px;
+      background-color: black;
+      color: white;
+      border: 2px solid black;
+    }
+    .error {
+      color: red;
+      font-size: 18px;
+      margin-top: 5px;
+    }
+    #nextButton {
+      margin-top: 30px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>爆弾解除ゲーム</h1>
+
+  <!-- 音声ボタン -->
+  <audio id="introAudio" src="C:\Users\kaho owner\Downloads\beep-02.mp3"></audio>
+  <!-- dummy.mp3 は後で本物の音源に差し替えてください -->
+  <button onclick="playIntro()">音声を再生</button>
+
+  <!-- カウントダウン -->
+  <div id="timer" class="timer"></div>
+
+  <!-- 小謎3問（最初は非表示） -->
+  <div id="puzzles" style="display:none;">
+    <div class="question">
+      1問目：Aの答えは？
+      <br>
+      <input id="q1" class="input-box">
+      <br>
+      <button onclick="checkQ1()">決定</button>
+      <div id="e1" class="error"></div>
+    </div>
+
+    <div class="question">
+      2問目：Bの答えは？
+      <br>
+      <input id="q2" class="input-box">
+      <br>
+      <button onclick="checkQ2()">決定</button>
+      <div id="e2" class="error"></div>
+    </div>
+
+    <div class="question">
+      3問目：Cの答えは？
+      <br>
+      <input id="q3" class="input-box">
+      <br>
+      <button onclick="checkQ3()">決定</button>
+      <div id="e3" class="error"></div>
+    </div>
+
+    <button id="nextButton" onclick="goToColors()">次のページへ</button>
+  </div>
+
+  <script>
+  function playIntro() {
+    const audio = document.getElementById("introAudio");
+    audio.play();
+
+    // 音声が終わったら自動でカウントダウン開始
+    audio.onended = () => {
+      startCountdown();   // ← カウントダウン開始
+      showPuzzles();      // ← 小謎を表示
+    };
+  }
+
+  // カウントダウン開始
+  function startCountdown() {
+    if (!localStorage.getItem("endTime")) {
+      const end = Date.now() + 30 * 60 * 1000; // 30分
+      localStorage.setItem("endTime", end);
+    }
+    updateTimer();
+    setInterval(updateTimer, 1000);
+  }
+
+  // カウントダウン表示更新
+  function updateTimer() {
+    const endTime = Number(localStorage.getItem("endTime"));
+    const now = Date.now();
+    const remaining = Math.floor((endTime - now) / 1000);
+
+    if (remaining <= 0) {
+      window.location.href = "gameover.html";
+      return;
+    }
+
+    const m = String(Math.floor(remaining / 60)).padStart(2, "0");
+    const s = String(remaining % 60).padStart(2, "0");
+    document.getElementById("timer").textContent = `${m}:${s}`;
+    }
+
+  // 小謎を表示
+  function showPuzzles() {
+    document.getElementById("puzzles").style.display = "block";
+    }
+
+    let q1ok = false, q2ok = false, q3ok = false;
+
+    function checkAll() {
+      if (q1ok && q2ok && q3ok) {
+        document.getElementById("nextButton").style.display = "inline-block";
+      }
+    }
+
+    function checkQ1() {
+      const v = document.getElementById("q1").value.trim();
+      if (v === "3635") {
+        q1ok = true;
+        document.getElementById("e1").textContent = "正解！";
+      } else {
+        q1ok = false;
+        document.getElementById("e1").textContent = "間違っています";
+      }
+      checkAll();
+    }
+
+    function checkQ2() {
+      const v = document.getElementById("q2").value.trim();
+      if (v === "せいかい") {
+        q2ok = true;
+        document.getElementById("e2").textContent = "正解！";
+      } else {
+        q2ok = false;
+        document.getElementById("e2").textContent = "間違っています";
+      }
+      checkAll();
+    }
+
+    function checkQ3() {
+      const v = document.getElementById("q3").value.trim();
+      if (v === "せいかい") {
+        q3ok = true;
+        document.getElementById("e3").textContent = "正解！";
+      } else {
+        q3ok = false;
+        document.getElementById("e3").textContent = "間違っています";
+      }
+      checkAll();
+    }
+
+    function goToColors() {
+      window.location.href = "colors.html";
+    }
+  </script>
+
+</body>
+</html>
