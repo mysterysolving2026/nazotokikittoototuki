@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>切りたい色コードは？</title>
+  <style>
+    body {
+      font-family: "MS Mincho", "Hiragino Mincho ProN", serif;
+      text-align: center;
+      margin-top: 60px;
+      background-color: black;
+      color: white;
+    }
+    .timer {
+      font-size: 36px;
+      margin-bottom: 20px;
+    }
+    .question {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+    .input-box {
+      width: 260px;
+      font-size: 18px;
+      padding: 4px;
+      text-align: center;
+    }
+    button {
+      font-family: "MS Mincho", "Hiragino Mincho ProN", serif;
+      font-size: 18px;
+      padding: 6px 12px;
+      margin-top: 8px;
+      background-color: white;
+      color: black;
+    }
+    .small-button {
+      position: fixed;
+      right: 10px;
+      bottom: 10px;
+      font-size: 12px;
+      padding: 4px 8px;
+      background-color: black;
+      color: #4B0082;
+      border: 2px solid black;
+    }
+    }
+    .message {
+      font-size: 20px;
+      margin-top: 15px;
+      color: yellow;
+    }
+    .error {
+      color: red;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="timer" class="timer"></div>
+
+  <h1>色コード入力</h1>
+
+  <!-- 手入力欄 -->
+  <input type="text" id="colorInput" class="input-box" placeholder="色を入力">
+  <br>
+  <button class="check-button" onclick="checkColor()">決定</button>
+
+  <!-- 色が浮かび上がる場所 -->
+  <div id="colorList" class="color-display"></div>
+
+  <!-- 戻るボタン -->
+  <button id="backButton" class="back-button" style="display:none;" onclick="goBack()">戻る</button>
+
+  <!-- 右下の小さな「入力」ボタン -->
+  <button class="small-button" onclick="goToFinal()">入力</button>
+
+  <script>
+    function initTimer() {
+      if (localStorage.getItem("bombCleared") === "true") return;
+
+      if (!localStorage.getItem("endTime")) {
+        const end = Date.now() + 10 * 60 * 1000;
+        localStorage.setItem("endTime", end);
+      }
+      updateTimer();
+      setInterval(updateTimer, 1000);
+    }
+
+    function updateTimer() {
+      if (localStorage.getItem("bombCleared") === "true") return;
+
+      const endTime = Number(localStorage.getItem("endTime"));
+      const now = Date.now();
+      const remaining = Math.floor((endTime - now) / 1000);
+
+      if (remaining <= 0) {
+        window.location.href = "gameover.html";
+        return;
+      }
+      const m = String(Math.floor(remaining / 60)).padStart(2, "0");
+      const s = String(remaining % 60).padStart(2, "0");
+      document.getElementById("timer").textContent = m + ":" + s;
+    }
+
+    initTimer();
+
+    function normalizeColors(str) {
+      return str.split(/、|,|\s+/).filter(x => x).map(x => x.trim());
+    }
+
+    // 正解色の判定用辞書
+    const colorMap = {
+      "赤": ["あか", "あかいろ", "赤", "赤色"],
+      "青": ["あお", "あおいろ", "青", "青色"],
+      "黒": ["くろ", "くろいろ", "黒", "黒色"],
+      "黄": ["き", "きいろ", "黄", "黄色"]
+    };
+
+    // すでに表示された色を記録
+    const foundColors = [];
+
+    function checkColor() {
+      const input = document.getElementById("colorInput").value.trim();
+      let matchedColor = null;
+
+      // 入力がどの色に該当するか判定
+      for (const key in colorMap) {
+        if (colorMap[key].includes(input)) {
+          matchedColor = key;
+          break;
+        }
+      }
+
+      // 正解色だった場合
+      if (matchedColor) {
+        if (!foundColors.includes(matchedColor)) {
+          foundColors.push(matchedColor);
+          updateDisplay();
+        }
+      } else {
+        alert("その色は切るべきコードではありません");
+      }
+
+      // 全色揃ったら戻るボタン表示
+      if (foundColors.length === 4) {
+        document.getElementById("msg").textContent = "爆弾解除？";
+        document.getElementById("err").textContent = "";
+        document.getElementById("backButton").style.display = "inline-block";
+      } else {
+        document.getElementById("msg").textContent = "";
+        document.getElementById("err").textContent = "間違っています";
+        document.getElementById("backButton").style.display = "none";
+      }
+    }
+
+    // 色を画面に浮かび上がらせる
+    function updateDisplay() {
+      const list = document.getElementById("colorList");
+      list.innerHTML = foundColors.join("・");
+    }
+
+     function reloadPage() {
+      window.location.href = "colors.html";
+    }
+
+    function goToFinal() {
+      window.location.href = "final.html";
+    }
+  </script>
+
+</body>
+</html>
