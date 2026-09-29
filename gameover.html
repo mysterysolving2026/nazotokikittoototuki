@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ゲームオーバー</title>
+  <style>
+    body {
+      font-family: "MS Mincho", "Hiragino Mincho ProN", serif;
+      text-align: center;
+      margin-top: 60px;
+    }
+    .message {
+      font-size: 24px;
+      margin-top: 20px;
+      color: red;
+    }
+    video {
+      margin-top: 20px;
+      max-width: 300px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>爆発しました！</h1>
+
+
+  <!-- びっくり箱の画像（仮） -->
+  <video src="C:\Users\kaho owner\OneDrive - 三重大学\3年\競技かるた学祭2026\謎解きキットびっくり箱.mp4" autoplay controls></video>
+
+
+  <div class="message">残念だったね</div>
+
+  <div style="margin-top:20px;">
+    <a href="C:\Users\kaho owner\OneDrive - 三重大学\3年\競技かるた(学祭以外)\賞状9月17日かるた大会.pdf" target="_blank">解説はこちら</a>
+  </div>
+
+  <script>
+    // ゲームオーバーになったらタイマー情報は消しておく
+    localStorage.removeItem("endTime");
+    localStorage.removeItem("bombCleared");
+  </script>
+
+</body>
+</html>
