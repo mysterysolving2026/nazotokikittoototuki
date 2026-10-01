@@ -2,61 +2,95 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
+  <!-- スマホで正しい幅・倍率で表示するための指定 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>切りたい色コードは？</title>
   <style>
-    font-face {
+    /* 「@」が抜けていたので修正 */
+    @font-face {
       font-family: "Let's go Digital";
       src: url("Let's go Digital Regular.ttf") format("truetype");
     }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: "MS Mincho", "Hiragino Mincho ProN", serif;
       text-align: center;
-      margin-top: 60px;
+      margin: 0;
+      padding: 40px 16px 80px;
       background-color: black;
       color: white;
+      font-size: clamp(18px, 4.5vw, 22px);
+      line-height: 1.6;
     }
+
     .timer {
       font-family: "Let's go Digital", sans-serif;
-      font-size: 36px;
+      font-size: clamp(48px, 16vw, 60px);
       margin-bottom: 20px;
     }
-    .question {
-      font-size: 22px;
-      margin-bottom: 10px;
+
+    h1 {
+      font-size: clamp(26px, 7vw, 34px);
+      margin: 10px 0 20px;
     }
+
     .input-box {
-      width: 260px;
-      font-size: 18px;
-      padding: 4px;
+      width: 100%;
+      max-width: 320px;
+      /* iPhoneの自動ズームを防ぐため16px以上 */
+      font-size: 20px;
+      padding: 10px;
       text-align: center;
     }
+
     button {
       font-family: "MS Mincho", "Hiragino Mincho ProN", serif;
-      font-size: 18px;
-      padding: 6px 12px;
-      margin-top: 8px;
+      font-size: 20px;
+      padding: 12px 28px;
+      min-height: 48px;
+      margin-top: 12px;
       background-color: white;
       color: black;
+      border: none;
+      border-radius: 6px;
     }
+
+    .color-display {
+      font-size: clamp(26px, 8vw, 36px);
+      margin-top: 24px;
+      min-height: 1.6em;
+      letter-spacing: 0.1em;
+    }
+
+    /* 右下の隠しボタン（目立たないまま、指で押せる大きさに） */
     .small-button {
       position: fixed;
       right: 10px;
-      bottom: 10px;
-      font-size: 12px;
-      padding: 4px 8px;
+      bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+      font-size: 14px;
+      padding: 10px 14px;
+      min-height: 0;
+      margin: 0;
       background-color: black;
       color: #4B0082;
       border: 2px solid black;
     }
-    }
+
     .message {
-      font-size: 20px;
+      font-size: clamp(22px, 6vw, 28px);
       margin-top: 15px;
       color: yellow;
     }
+
     .error {
       color: red;
-      margin-top: 5px;
+      font-size: 20px;
+      margin-top: 8px;
+      min-height: 1.6em;
     }
   </style>
 </head>
@@ -71,8 +105,13 @@
   <br>
   <button class="check-button" onclick="checkColor()">決定</button>
 
+  <!-- メッセージ表示欄（スクリプトが使っているのに無かったので追加） -->
+  <div id="err" class="error"></div>
+
   <!-- 色が浮かび上がる場所 -->
   <div id="colorList" class="color-display"></div>
+
+  <div id="msg" class="message"></div>
 
   <!-- 戻るボタン -->
   <button id="backButton" class="back-button" style="display:none;" onclick="goBack()">戻る</button>
@@ -137,35 +176,42 @@
         }
       }
 
-      // 正解色だった場合
       if (matchedColor) {
+        // 正解色だった場合
         if (!foundColors.includes(matchedColor)) {
           foundColors.push(matchedColor);
           updateDisplay();
         }
+        document.getElementById("err").textContent = "";
       } else {
+        // 不正解の場合
         alert("その色は切るべきコードではありません");
+        document.getElementById("err").textContent = "間違っています";
       }
+
+      // 入力欄を空にして次を入れやすくする
+      document.getElementById("colorInput").value = "";
 
       // 全色揃ったら戻るボタン表示
       if (foundColors.length === 4) {
         document.getElementById("msg").textContent = "爆弾解除？";
         document.getElementById("err").textContent = "";
         document.getElementById("backButton").style.display = "inline-block";
-      } else {
-        document.getElementById("msg").textContent = "";
-        document.getElementById("err").textContent = "間違っています";
-        document.getElementById("backButton").style.display = "none";
       }
     }
 
     // 色を画面に浮かび上がらせる
     function updateDisplay() {
       const list = document.getElementById("colorList");
-      list.innerHTML = foundColors.join("・");
+      list.textContent = foundColors.join("・");
     }
 
-     function reloadPage() {
+    // 戻るボタン（関数が無かったので追加。前のページに戻ります）
+    function goBack() {
+      history.back();
+    }
+
+    function reloadPage() {
       window.location.href = "colors.html";
     }
 
