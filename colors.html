@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>切りたい色コードは？</title>
   <style>
-    /* 「@」が抜けていたので修正 */
     @font-face {
       font-family: "Let's go Digital";
       src: url("Let's go Digital Regular.ttf") format("truetype");
@@ -20,58 +19,62 @@
       font-family: "MS Mincho", "Hiragino Mincho ProN", serif;
       text-align: center;
       margin: 0;
-      padding: 40px 16px 80px;
+      padding: 40px 16px 90px;
       background-color: black;
       color: white;
-      font-size: clamp(18px, 4.5vw, 22px);
+      font-size: 24px;
       line-height: 1.6;
     }
 
+    /* タイマー（元：36px） */
     .timer {
       font-family: "Let's go Digital", sans-serif;
-      font-size: clamp(48px, 16vw, 60px);
+      font-size: 64px;
       margin-bottom: 20px;
     }
 
+    /* 見出し「色コード入力」 */
     h1 {
-      font-size: clamp(26px, 7vw, 34px);
-      margin: 10px 0 20px;
+      font-size: 36px;
+      margin: 10px 0 24px;
     }
 
+    /* 入力欄（元：18px） */
     .input-box {
       width: 100%;
-      max-width: 320px;
-      /* iPhoneの自動ズームを防ぐため16px以上 */
-      font-size: 20px;
-      padding: 10px;
+      max-width: 340px;
+      font-size: 24px;
+      padding: 12px;
       text-align: center;
     }
 
+    /* ボタン（元：18px） */
     button {
       font-family: "MS Mincho", "Hiragino Mincho ProN", serif;
-      font-size: 20px;
-      padding: 12px 28px;
-      min-height: 48px;
-      margin-top: 12px;
+      font-size: 24px;
+      padding: 12px 32px;
+      min-height: 52px;
+      margin-top: 14px;
       background-color: white;
       color: black;
       border: none;
       border-radius: 6px;
     }
 
+    /* 見つけた色の表示 */
     .color-display {
-      font-size: clamp(26px, 8vw, 36px);
+      font-size: 40px;
       margin-top: 24px;
       min-height: 1.6em;
       letter-spacing: 0.1em;
     }
 
-    /* 右下の隠しボタン（目立たないまま、指で押せる大きさに） */
+    /* 右下の隠しボタン（元：12px） */
     .small-button {
       position: fixed;
       right: 10px;
       bottom: calc(10px + env(safe-area-inset-bottom, 0px));
-      font-size: 14px;
+      font-size: 16px;
       padding: 10px 14px;
       min-height: 0;
       margin: 0;
@@ -80,15 +83,17 @@
       border: 2px solid black;
     }
 
+    /* 「爆弾解除？」（元：20px） */
     .message {
-      font-size: clamp(22px, 6vw, 28px);
-      margin-top: 15px;
+      font-size: 34px;
+      margin-top: 16px;
       color: yellow;
     }
 
+    /* 「間違ってるよ」 */
     .error {
       color: red;
-      font-size: 20px;
+      font-size: 24px;
       margin-top: 8px;
       min-height: 1.6em;
     }
@@ -98,14 +103,14 @@
 
   <div id="timer" class="timer"></div>
 
-  <h1>色コード入力</h1>
+  <h1>切りたい色コードを入力してね</h1>
 
   <!-- 手入力欄 -->
   <input type="text" id="colorInput" class="input-box" placeholder="色を入力">
   <br>
   <button class="check-button" onclick="checkColor()">決定</button>
 
-  <!-- メッセージ表示欄（スクリプトが使っているのに無かったので追加） -->
+  <!-- メッセージ表示欄 -->
   <div id="err" class="error"></div>
 
   <!-- 色が浮かび上がる場所 -->
@@ -149,10 +154,6 @@
 
     initTimer();
 
-    function normalizeColors(str) {
-      return str.split(/、|,|\s+/).filter(x => x).map(x => x.trim());
-    }
-
     // 正解色の判定用辞書
     const colorMap = {
       "赤": ["あか", "あかいろ", "赤", "赤色"],
@@ -168,7 +169,6 @@
       const input = document.getElementById("colorInput").value.trim();
       let matchedColor = null;
 
-      // 入力がどの色に該当するか判定
       for (const key in colorMap) {
         if (colorMap[key].includes(input)) {
           matchedColor = key;
@@ -177,22 +177,18 @@
       }
 
       if (matchedColor) {
-        // 正解色だった場合
         if (!foundColors.includes(matchedColor)) {
           foundColors.push(matchedColor);
           updateDisplay();
         }
         document.getElementById("err").textContent = "";
       } else {
-        // 不正解の場合
         alert("その色は切るべきコードではありません");
-        document.getElementById("err").textContent = "間違っています";
+        document.getElementById("err").textContent = "間違ってるよ";
       }
 
-      // 入力欄を空にして次を入れやすくする
       document.getElementById("colorInput").value = "";
 
-      // 全色揃ったら戻るボタン表示
       if (foundColors.length === 4) {
         document.getElementById("msg").textContent = "爆弾解除？";
         document.getElementById("err").textContent = "";
@@ -200,19 +196,12 @@
       }
     }
 
-    // 色を画面に浮かび上がらせる
     function updateDisplay() {
-      const list = document.getElementById("colorList");
-      list.textContent = foundColors.join("・");
+      document.getElementById("colorList").textContent = foundColors.join("・");
     }
 
-    // 戻るボタン（関数が無かったので追加。前のページに戻ります）
     function goBack() {
       history.back();
-    }
-
-    function reloadPage() {
-      window.location.href = "colors.html";
     }
 
     function goToFinal() {
