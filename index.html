@@ -2,16 +2,14 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <!-- スマホで正しい幅・倍率で表示するための指定（これが無いと文字が小さく縮小される） -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>杏ちゃんの謎解き</title>
   <style>
-    localStorage.setItem("currentPage", "index.html");
-    
-    /* 「@」が抜けていたので修正（これでフォントが読み込まれます） */
+    /* フォントファイル名は digital.ttf に変更して、HTMLと同じフォルダに置く */
     @font-face {
-      font-family: "Let's go Digital";
-      src: url("Let's go Digital Regular.ttf") format("truetype");
+      font-family: "DigitalFont";
+      src: url("digital.ttf") format("truetype");
+      font-display: block;
     }
 
     * {
@@ -23,41 +21,38 @@
       text-align: center;
       margin: 0;
       padding: 40px 16px;
-      /* 基本の文字サイズ：画面幅に合わせて 18px〜22px の間で自動調整 */
-      font-size: clamp(18px, 4.5vw, 22px);
+      font-size: 24px;
       line-height: 1.6;
     }
 
     .timer {
-      font-family: "Let's go Digital", sans-serif;
-      /* タイマー：スマホでも大きく、PCでは最大 60px */
-      font-size: clamp(48px, 16vw, 60px);
+      font-family: "DigitalFont", monospace;
+      font-size: 64px;
       margin: 16px 0;
+      min-height: 1.2em;
     }
 
     .question {
-      margin: 32px auto 0;
-      max-width: 500px;
-      font-size: clamp(18px, 4.8vw, 22px);
+      margin: 36px auto 0;
+      max-width: 600px;
+      font-size: 24px;
     }
 
     .input-box {
       width: 100%;
       max-width: 320px;
-      /* iPhoneは16px未満だと入力時に勝手にズームするので大きめに */
-      font-size: 20px;
-      padding: 10px;
+      font-size: 24px;
+      padding: 12px;
       margin-top: 10px;
       text-align: center;
     }
 
     button {
       font-family: "MS Mincho", "Hiragino Mincho ProN", serif;
-      font-size: 20px;
-      /* 指で押しやすい大きさに */
-      padding: 12px 28px;
-      min-height: 48px;
-      margin-top: 12px;
+      font-size: 24px;
+      padding: 12px 32px;
+      min-height: 52px;
+      margin-top: 14px;
       background-color: black;
       color: white;
       border: 2px solid black;
@@ -66,9 +61,9 @@
 
     .error {
       color: red;
-      font-size: 20px;
+      font-size: 24px;
       margin-top: 8px;
-      min-height: 1.6em; /* メッセージ表示時にレイアウトがずれないように */
+      min-height: 1.6em;
     }
 
     #nextButton {
@@ -81,7 +76,7 @@
 
   <!-- 音声ボタン -->
   <audio id="introAudio" src="beep-02.mp3"></audio>
-  <button onclick="playIntro()">音声を再生</button>
+  <button id="playButton" onclick="playIntro()">音声を再生</button>
 
   <!-- カウントダウン -->
   <div id="timer" class="timer"></div>
@@ -119,6 +114,10 @@
   </div>
 
   <script>
+  localStorage.setItem("currentPage", "index.html");
+
+  let timerInterval = null;
+
   function playIntro() {
     const audio = document.getElementById("introAudio");
     audio.play();
@@ -130,20 +129,24 @@
     };
   }
 
-  // カウントダウン開始
-    // カウントダウン開始（音声を再生するたびに30分から新しく始める）
+  // カウントダウン開始（音声を再生するたびに30分から新しく始める）
   function startCountdown() {
     localStorage.removeItem("bombCleared");
     localStorage.setItem("endTime", Date.now() + 30 * 60 * 1000); // 30分
+    runTimer();
+  }
+
+  // タイマーを動かす（二重に動かないようにする）
+  function runTimer() {
+    if (timerInterval) clearInterval(timerInterval);
     updateTimer();
-    setInterval(updateTimer, 1000);
+    timerInterval = setInterval(updateTimer, 1000);
   }
 
   // カウントダウン表示更新
   function updateTimer() {
     const endTime = Number(localStorage.getItem("endTime"));
-    const now = Date.now();
-    const remaining = Math.floor((endTime - now) / 1000);
+    const remaining = Math.floor((endTime - Date.now()) / 1000);
 
     if (remaining <= 0) {
       window.location.href = "gameover.html";
@@ -207,10 +210,10 @@
   function goToColors() {
     window.location.href = "colors.html";
   }
-    // 「続ける」で戻ってきたときは、音声なしで問題とタイマーを表示
+
+  // 「続ける」で戻ってきたときは、音声なしで問題とタイマーを表示
   if (Number(localStorage.getItem("endTime")) > Date.now()) {
-    updateTimer();
-    setInterval(updateTimer, 1000);
+    runTimer();
     showPuzzles();
   }
   </script>
