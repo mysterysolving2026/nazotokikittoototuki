@@ -2,21 +2,52 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
+  <!-- スマホで正しい幅・倍率で表示するための指定 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ゲームオーバー</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: "MS Mincho", "Hiragino Mincho ProN", serif;
       text-align: center;
-      margin-top: 60px;
+      margin: 0;
+      padding: 40px 16px;
+      font-size: clamp(18px, 4.5vw, 22px);
+      line-height: 1.6;
     }
+
+    h1 {
+      font-size: clamp(26px, 7vw, 36px);
+      margin: 10px 0 20px;
+    }
+
     .message {
-      font-size: 24px;
-      margin-top: 20px;
+      font-size: clamp(26px, 7vw, 32px);
+      margin-top: 24px;
       color: red;
     }
+
     video {
       margin-top: 20px;
-      max-width: 300px;
+      width: 100%;
+      max-width: 480px;
+      height: auto;
+    }
+
+    /* 解説リンクを指で押しやすいボタン風に */
+    .link-button {
+      display: inline-block;
+      margin-top: 28px;
+      padding: 12px 28px;
+      min-height: 48px;
+      font-size: 20px;
+      color: white;
+      background-color: black;
+      border-radius: 6px;
+      text-decoration: none;
     }
   </style>
 </head>
@@ -24,15 +55,14 @@
 
   <h1>あーあ、信じてたのに...</h1>
 
-
-  <!-- びっくり箱の画像（仮） -->
-  <video src="bikkuribako.mp3" autoplay controls></video>
-
+  <!-- びっくり箱の動画 -->
+  <!-- playsinline：iPhoneで勝手に全画面にならず、ページ内で再生される -->
+  <video src="bikkuribako.mp4" autoplay playsinline controls></video>
 
   <div class="message">残念だったね</div>
 
-  <div style="margin-top:20px;">
-    <a href="karuta.pdf" target="_blank">解説はこっち</a>
+  <div>
+    <a href="karuta.pdf" target="_blank" class="link-button">解説はこっち</a>
   </div>
 
   <script>
