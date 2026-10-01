@@ -2,48 +2,75 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
+  <!-- スマホで正しい幅・倍率で表示するための指定（これが無いと文字が小さく縮小される） -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>杏ちゃんの謎解き</title>
   <style>
-    font-face {
+    /* 「@」が抜けていたので修正（これでフォントが読み込まれます） */
+    @font-face {
       font-family: "Let's go Digital";
       src: url("Let's go Digital Regular.ttf") format("truetype");
     }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: "MS Mincho", "Hiragino Mincho ProN", serif;
       text-align: center;
-      margin-top: 60px;
+      margin: 0;
+      padding: 40px 16px;
+      /* 基本の文字サイズ：画面幅に合わせて 18px〜22px の間で自動調整 */
+      font-size: clamp(18px, 4.5vw, 22px);
+      line-height: 1.6;
     }
+
     .timer {
       font-family: "Let's go Digital", sans-serif;
-      font-size: 50px;
-      margin: 10px 0;
+      /* タイマー：スマホでも大きく、PCでは最大 60px */
+      font-size: clamp(48px, 16vw, 60px);
+      margin: 16px 0;
     }
+
     .question {
-      margin-top: 20px;
-      font-size: 20px;
+      margin: 32px auto 0;
+      max-width: 500px;
+      font-size: clamp(18px, 4.8vw, 22px);
     }
+
     .input-box {
-      width: 200px;
-      font-size: 18px;
-      padding: 4px;
+      width: 100%;
+      max-width: 320px;
+      /* iPhoneは16px未満だと入力時に勝手にズームするので大きめに */
+      font-size: 20px;
+      padding: 10px;
+      margin-top: 10px;
       text-align: center;
     }
+
     button {
       font-family: "MS Mincho", "Hiragino Mincho ProN", serif;
-      font-size: 18px;
-      padding: 6px 12px;
-      margin-top: 8px;
+      font-size: 20px;
+      /* 指で押しやすい大きさに */
+      padding: 12px 28px;
+      min-height: 48px;
+      margin-top: 12px;
       background-color: black;
       color: white;
       border: 2px solid black;
+      border-radius: 6px;
     }
+
     .error {
       color: red;
-      font-size: 18px;
-      margin-top: 5px;
+      font-size: 20px;
+      margin-top: 8px;
+      min-height: 1.6em; /* メッセージ表示時にレイアウトがずれないように */
     }
+
     #nextButton {
-      margin-top: 30px;
+      margin-top: 40px;
       display: none;
     }
   </style>
@@ -52,7 +79,6 @@
 
   <!-- 音声ボタン -->
   <audio id="introAudio" src="beep-02.mp3"></audio>
-  <!-- dummy.mp3 は後で本物の音源に差し替えてください -->
   <button onclick="playIntro()">音声を再生</button>
 
   <!-- カウントダウン -->
@@ -72,7 +98,7 @@
     <div class="question">
       2問目：星を重ねて月を見るとき、秒針、長針、短針が示す数字は？
       <br>
-      <input id="q2" class="input-box">
+      <input id="q2" class="input-box" inputmode="numeric">
       <br>
       <button onclick="checkQ2()">決定</button>
       <div id="e2" class="error"></div>
@@ -97,8 +123,8 @@
 
     // 音声が終わったら自動でカウントダウン開始
     audio.onended = () => {
-      startCountdown();   // ← カウントダウン開始
-      showPuzzles();      // ← 小謎を表示
+      startCountdown();
+      showPuzzles();
     };
   }
 
@@ -126,60 +152,60 @@
     const m = String(Math.floor(remaining / 60)).padStart(2, "0");
     const s = String(remaining % 60).padStart(2, "0");
     document.getElementById("timer").textContent = `${m}:${s}`;
-    }
+  }
 
   // 小謎を表示
   function showPuzzles() {
     document.getElementById("puzzles").style.display = "block";
-    }
+  }
 
-    let q1ok = false, q2ok = false, q3ok = false;
+  let q1ok = false, q2ok = false, q3ok = false;
 
-    function checkAll() {
-      if (q1ok && q2ok && q3ok) {
-        document.getElementById("nextButton").style.display = "inline-block";
-      }
+  function checkAll() {
+    if (q1ok && q2ok && q3ok) {
+      document.getElementById("nextButton").style.display = "inline-block";
     }
+  }
 
-    function checkQ1() {
-      const v = document.getElementById("q1").value.trim();
-      if (v === "3635") {
-        q1ok = true;
-        document.getElementById("e1").textContent = "正解！";
-      } else {
-        q1ok = false;
-        document.getElementById("e1").textContent = "間違ってるよ";
-      }
-      checkAll();
+  function checkQ1() {
+    const v = document.getElementById("q1").value.trim();
+    if (v === "3635") {
+      q1ok = true;
+      document.getElementById("e1").textContent = "正解！";
+    } else {
+      q1ok = false;
+      document.getElementById("e1").textContent = "間違ってるよ";
     }
+    checkAll();
+  }
 
-    function checkQ2() {
-      const v = document.getElementById("q2").value.trim();
-      if (v === "4701") {
-        q2ok = true;
-        document.getElementById("e2").textContent = "正解！";
-      } else {
-        q2ok = false;
-        document.getElementById("e2").textContent = "間違ってるよ";
-      }
-      checkAll();
+  function checkQ2() {
+    const v = document.getElementById("q2").value.trim();
+    if (v === "4701") {
+      q2ok = true;
+      document.getElementById("e2").textContent = "正解！";
+    } else {
+      q2ok = false;
+      document.getElementById("e2").textContent = "間違ってるよ";
     }
+    checkAll();
+  }
 
-    function checkQ3() {
-      const v = document.getElementById("q3").value.trim();
-      if (v === "アンブレラサンセット") {
-        q3ok = true;
-        document.getElementById("e3").textContent = "正解！";
-      } else {
-        q3ok = false;
-        document.getElementById("e3").textContent = "間違ってるよ";
-      }
-      checkAll();
+  function checkQ3() {
+    const v = document.getElementById("q3").value.trim();
+    if (v === "アンブレラサンセット") {
+      q3ok = true;
+      document.getElementById("e3").textContent = "正解！";
+    } else {
+      q3ok = false;
+      document.getElementById("e3").textContent = "間違ってるよ";
     }
+    checkAll();
+  }
 
-    function goToColors() {
-      window.location.href = "colors.html";
-    }
+  function goToColors() {
+    window.location.href = "colors.html";
+  }
   </script>
 
 </body>
