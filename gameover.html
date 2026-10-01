@@ -2,7 +2,6 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <!-- スマホで正しい幅・倍率で表示するための指定 -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ゲームオーバー</title>
   <style>
@@ -15,17 +14,17 @@
       text-align: center;
       margin: 0;
       padding: 40px 16px;
-      font-size: clamp(18px, 4.5vw, 22px);
+      font-size: 24px;
       line-height: 1.6;
     }
 
     h1 {
-      font-size: clamp(26px, 7vw, 36px);
+      font-size: 34px;
       margin: 10px 0 20px;
     }
 
     .message {
-      font-size: clamp(26px, 7vw, 32px);
+      font-size: 32px;
       margin-top: 24px;
       color: red;
     }
@@ -37,17 +36,29 @@
       height: auto;
     }
 
-    /* 解説リンクを指で押しやすいボタン風に */
     .link-button {
       display: inline-block;
       margin-top: 28px;
-      padding: 12px 28px;
-      min-height: 48px;
-      font-size: 20px;
+      padding: 12px 32px;
+      min-height: 52px;
+      font-size: 24px;
       color: white;
       background-color: black;
       border-radius: 6px;
       text-decoration: none;
+    }
+
+    /* 「続ける」ボタン */
+    .continue-button {
+      font-family: "MS Mincho", "Hiragino Mincho ProN", serif;
+      margin-top: 24px;
+      padding: 12px 40px;
+      min-height: 52px;
+      font-size: 24px;
+      color: black;
+      background-color: white;
+      border: 2px solid black;
+      border-radius: 6px;
     }
   </style>
 </head>
@@ -55,8 +66,6 @@
 
   <h1>あーあ、信じてたのに...</h1>
 
-  <!-- びっくり箱の動画 -->
-  <!-- playsinline：iPhoneで勝手に全画面にならず、ページ内で再生される -->
   <video src="bikkuribako.mp4" autoplay playsinline controls></video>
 
   <div class="message">残念だったね</div>
@@ -65,10 +74,27 @@
     <a href="karuta.pdf" target="_blank" class="link-button">解説はこっち</a>
   </div>
 
+  <!-- 最後の行：続けるボタン -->
+  <div>
+    <button class="continue-button" onclick="continueGame()">続ける</button>
+  </div>
+
   <script>
+    // 続けたときにもらえる時間（分）。好きな数字に変えてOK
+    const CONTINUE_MINUTES = 10;
+
     // ゲームオーバーになったらタイマー情報は消しておく
     localStorage.removeItem("endTime");
     localStorage.removeItem("bombCleared");
+
+    function continueGame() {
+      // 新しい制限時間をセット
+      localStorage.setItem("endTime", Date.now() + CONTINUE_MINUTES * 60 * 1000);
+
+      // 最後にいたページへ戻る（記録が無ければ最初のページへ）
+      const page = localStorage.getItem("currentPage") || "index.html";
+      window.location.href = page;
+    }
   </script>
 
 </body>
