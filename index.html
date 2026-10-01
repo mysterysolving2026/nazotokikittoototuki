@@ -129,11 +129,10 @@
   }
 
   // カウントダウン開始
+    // カウントダウン開始（音声を再生するたびに30分から新しく始める）
   function startCountdown() {
-    if (!localStorage.getItem("endTime")) {
-      const end = Date.now() + 30 * 60 * 1000; // 30分
-      localStorage.setItem("endTime", end);
-    }
+    localStorage.removeItem("bombCleared");
+    localStorage.setItem("endTime", Date.now() + 30 * 60 * 1000); // 30分
     updateTimer();
     setInterval(updateTimer, 1000);
   }
