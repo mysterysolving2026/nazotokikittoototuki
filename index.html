@@ -6,6 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>杏ちゃんの謎解き</title>
   <style>
+    localStorage.setItem("currentPage", "index.html");
+    
     /* 「@」が抜けていたので修正（これでフォントが読み込まれます） */
     @font-face {
       font-family: "Let's go Digital";
@@ -204,6 +206,12 @@
 
   function goToColors() {
     window.location.href = "colors.html";
+  }
+    // 「続ける」で戻ってきたときは、音声なしで問題とタイマーを表示
+  if (Number(localStorage.getItem("endTime")) > Date.now()) {
+    updateTimer();
+    setInterval(updateTimer, 1000);
+    showPuzzles();
   }
   </script>
 
