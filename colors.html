@@ -68,14 +68,15 @@
       position: fixed;
       right: 10px;
       bottom: calc(10px + env(safe-area-inset-bottom, 0px));
-      z-index: 100; /* 他の要素に隠れて押せなくならないように */
+      z-index: 100;
       font-size: 16px;
       padding: 10px 14px;
       min-height: 0;
       margin: 0;
       background-color: black;
-      color: #411445;
+      color: #4B0082;
       border: 2px solid black;
+      display: none; /* 最初は隠しておく */
     }
 
     .message {
@@ -108,18 +109,17 @@
 
   <button id="backButton" class="back-button" style="display:none;" onclick="goBack()">戻る</button>
 
-  <!-- 右下の小さな「入力」ボタン -->
-  <button class="small-button" onclick="goToFinal()">入力</button>
+  <!-- 右下の紫の「入力」ボタン（4色そろうと出現） -->
+  <button id="finalButton" class="small-button" onclick="goToFinal()">入力</button>
 
   <script>
     localStorage.setItem("currentPage", "colors.html");
-    
+
     const TIME_LIMIT = 30 * 60 * 1000; // 制限時間30分
 
     function initTimer() {
       if (localStorage.getItem("bombCleared") === "true") return;
 
-      // 最初のページを経由せず直接開いた場合だけ、ここから30分
       if (!localStorage.getItem("endTime")) {
         localStorage.setItem("endTime", Date.now() + TIME_LIMIT);
       }
@@ -172,15 +172,17 @@
         document.getElementById("err").textContent = "";
       } else {
         alert("その色は切るべきコードではありません");
-        document.getElementById("err").textContent = "間違ってるね";
+        document.getElementById("err").textContent = "間違っています";
       }
 
       document.getElementById("colorInput").value = "";
 
+      // 4色そろったら「爆弾解除？」と紫の「入力」ボタンを表示
       if (foundColors.length === 4) {
         document.getElementById("msg").textContent = "爆弾解除？";
         document.getElementById("err").textContent = "";
         document.getElementById("backButton").style.display = "inline-block";
+        document.getElementById("finalButton").style.display = "block";
       }
     }
 
