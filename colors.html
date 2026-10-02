@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>切りたいコードの色は？</title>
+
   <style>
     @font-face {
       font-family: "Let's go Digital";
@@ -33,7 +34,17 @@
 
     h1 {
       font-size: 36px;
-      margin: 10px 0 24px;
+      margin: 10px 0 40px;
+    }
+
+    .question {
+      margin: 36px auto 0;
+      max-width: 600px;
+    }
+
+    .question-title {
+      font-size: 28px;
+      margin-bottom: 10px;
     }
 
     .input-box {
@@ -57,13 +68,26 @@
     }
 
     .color-display {
-      font-size: 40px;
-      margin-top: 24px;
+      font-size: 32px;
+      margin-top: 14px;
       min-height: 1.6em;
       letter-spacing: 0.1em;
     }
 
-    /* 右下の紫の「入力」ボタン → final.html へ */
+    .error {
+      color: red;
+      font-size: 24px;
+      margin-top: 8px;
+      min-height: 1.6em;
+    }
+
+    .message {
+      font-size: 34px;
+      margin-top: 30px;
+      color: yellow;
+    }
+
+    /* 右下の隠し「入力」ボタン */
     .small-button {
       position: fixed;
       right: 10px;
@@ -76,144 +100,448 @@
       background-color: black;
       color: #4B0082;
       border: 2px solid black;
-      display: none; /* 最初は隠しておく */
-    }
-
-    .message {
-      font-size: 34px;
-      margin-top: 16px;
-      color: yellow;
-    }
-
-    .error {
-      color: red;
-      font-size: 24px;
-      margin-top: 8px;
-      min-height: 1.6em;
+      display: none;
     }
   </style>
 </head>
+
 <body>
 
+  <!-- タイマー -->
   <div id="timer" class="timer"></div>
 
-  <h1>➃➄切りたいコードの色は？ 1色ずつ入力してね入力</h1>
+  <!-- 共通の案内 -->
+  <h1>
+    切りたいコードの色は？<br>
+    1色ずつ入力してね
+  </h1>
 
-  <input type="text" id="colorInput" class="input-box" placeholder="色を入力">
-  <br>
-  <button class="check-button" onclick="checkColor()">決定</button>
 
-  <div id="err" class="error"></div>
-  <div id="colorList" class="color-display"></div>
+  <!-- 問題4 -->
+  <div class="question">
+
+    <div class="question-title">
+      ➃歌詞に隠された色は？
+    </div>
+
+    <input
+      type="text"
+      id="colorInput4"
+      class="input-box"
+      placeholder="色を入力"
+    >
+
+    <br>
+
+    <button onclick="checkColor4()">
+      決定
+    </button>
+
+    <div id="err4" class="error"></div>
+
+    <div id="colorList4" class="color-display"></div>
+
+  </div>
+
+
+  <!-- 問題5 -->
+  <div class="question">
+
+    <div class="question-title">
+      ⑤現れた色は？
+    </div>
+
+    <input
+      type="text"
+      id="colorInput5"
+      class="input-box"
+      placeholder="色を入力"
+    >
+
+    <br>
+
+    <button onclick="checkColor5()">
+      決定
+    </button>
+
+    <div id="err5" class="error"></div>
+
+    <div id="colorList5" class="color-display"></div>
+
+  </div>
+
+
+  <!-- 4色そろった時の表示 -->
   <div id="msg" class="message"></div>
 
-  <button id="backButton" class="back-button" style="display:none;" onclick="goBack()">戻る</button>
+  <button
+    id="backButton"
+    style="display:none;"
+    onclick="goBack()"
+  >
+    戻る
+  </button>
 
-  <!-- 右下の紫の「入力」ボタン（4色そろうと出現） -->
-  <button id="finalButton" class="small-button" onclick="goToFinal()">入力</button>
+
+  <!-- 右下の隠しボタン -->
+  <button
+    id="finalButton"
+    class="small-button"
+    onclick="goToFinal()"
+  >
+    入力
+  </button>
+
 
   <script>
+
     localStorage.setItem("currentPage", "colors.html");
 
-    const TIME_LIMIT = 60 * 60 * 1000; // 制限時間60分
+
+    /*
+    ------------------------------
+    タイマー
+    ------------------------------
+    */
+
+    const TIME_LIMIT = 60 * 60 * 1000;
 
     function initTimer() {
-      if (localStorage.getItem("bombCleared") === "true") return;
+
+      if (localStorage.getItem("bombCleared") === "true") {
+        return;
+      }
 
       if (!localStorage.getItem("endTime")) {
-        localStorage.setItem("endTime", Date.now() + TIME_LIMIT);
+        localStorage.setItem(
+          "endTime",
+          Date.now() + TIME_LIMIT
+        );
       }
+
       updateTimer();
+
       setInterval(updateTimer, 1000);
     }
 
+
     function updateTimer() {
-      if (localStorage.getItem("bombCleared") === "true") return;
 
-      const endTime = Number(localStorage.getItem("endTime"));
-      const remaining = Math.floor((endTime - Date.now()) / 1000);
-
-      if (remaining <= 0) {
-        window.location.href = "gameover.html";
+      if (localStorage.getItem("bombCleared") === "true") {
         return;
       }
-      const m = String(Math.floor(remaining / 60)).padStart(2, "0");
-      const s = String(remaining % 60).padStart(2, "0");
-      document.getElementById("timer").textContent = m + ":" + s;
+
+      const endTime =
+        Number(localStorage.getItem("endTime"));
+
+      const remaining =
+        Math.floor((endTime - Date.now()) / 1000);
+
+
+      if (remaining <= 0) {
+
+        window.location.href = "gameover.html";
+
+        return;
+      }
+
+
+      const m =
+        String(Math.floor(remaining / 60))
+        .padStart(2, "0");
+
+      const s =
+        String(remaining % 60)
+        .padStart(2, "0");
+
+
+      document.getElementById("timer").textContent =
+        m + ":" + s;
     }
+
 
     initTimer();
 
+
+
+    /*
+    ------------------------------
+    色の表記ゆれ
+    ------------------------------
+    */
+
     const colorMap = {
-      "赤": ["あか", "あかいろ", "赤", "赤色"],
-      "青": ["あお", "あおいろ", "青", "青色"],
-      "黒": ["くろ", "くろいろ", "黒", "黒色"],
-      "黄": ["き", "きいろ", "黄", "黄色"]
+
+      "赤": [
+        "あか",
+        "あかいろ",
+        "赤",
+        "赤色"
+      ],
+
+      "青": [
+        "あお",
+        "あおいろ",
+        "青",
+        "青色"
+      ],
+
+      "黒": [
+        "くろ",
+        "くろいろ",
+        "黒",
+        "黒色"
+      ],
+
+      "黄": [
+        "き",
+        "きいろ",
+        "黄",
+        "黄色"
+      ]
+
     };
 
-    // 正解済みの色をlocalStorageから復元
-    const foundColors = JSON.parse(
-    localStorage.getItem("foundColors") || "[]"
-    );
- 
-    // ページを開いたときに、すでに見つけた色を表示
-    updateDisplay();
- 
-    // すでに4色そろっていた場合は、解除画面も復元
-    if (foundColors.length === 4) {
-    document.getElementById("msg").textContent = "爆弾解除？";
-    document.getElementById("backButton").style.display = "inline-block";
-    document.getElementById("finalButton").style.display = "block";
-    }
 
-    function checkColor() {
-      const input = document.getElementById("colorInput").value.trim();
-      let matchedColor = null;
+
+    /*
+    ------------------------------
+    正解済みデータを復元
+    ------------------------------
+    */
+
+    const foundColors4 =
+      JSON.parse(
+        localStorage.getItem("foundColors4") || "[]"
+      );
+
+    const foundColors5 =
+      JSON.parse(
+        localStorage.getItem("foundColors5") || "[]"
+      );
+
+
+    updateDisplay();
+
+
+
+    /*
+    ------------------------------
+    入力された色を判定する
+    ------------------------------
+    */
+
+    function getMatchedColor(input) {
 
       for (const key in colorMap) {
+
         if (colorMap[key].includes(input)) {
-          matchedColor = key;
-          break;
+          return key;
         }
+
       }
 
-      if (matchedColor) {
-        if (!foundColors.includes(matchedColor)) {
-          foundColors.push(matchedColor);
- 
-        // 見つけた色を保存
-        localStorage.setItem("foundColors", JSON.stringify(foundColors));
- 
-        updateDisplay();
-      }
-        document.getElementById("err").textContent = "";
-      } else {
-        alert("その色は切るべきコードではありません");
-        document.getElementById("err").textContent = "間違ってるよ";
-      }
-
-      document.getElementById("colorInput").value = "";
-
-      // 4色そろったら「爆弾解除？」と紫の「入力」ボタンを表示
-      if (foundColors.length === 4) {
-        document.getElementById("msg").textContent = "爆弾解除？";
-        document.getElementById("err").textContent = "";
-        document.getElementById("backButton").style.display = "inline-block";
-        document.getElementById("finalButton").style.display = "block";
-      }
+      return null;
     }
+
+
+
+    /*
+    ------------------------------
+    問題4
+
+    正解：青・黒
+    ------------------------------
+    */
+
+    function checkColor4() {
+
+      const input =
+        document
+        .getElementById("colorInput4")
+        .value
+        .trim();
+
+
+      const matchedColor =
+        getMatchedColor(input);
+
+
+      if (
+        matchedColor === "青" ||
+        matchedColor === "黒"
+      ) {
+
+        if (!foundColors4.includes(matchedColor)) {
+
+          foundColors4.push(matchedColor);
+
+          localStorage.setItem(
+            "foundColors4",
+            JSON.stringify(foundColors4)
+          );
+
+        }
+
+        document.getElementById("err4").textContent = "";
+
+      } else {
+
+        alert(
+          "その色は切るべきコードではありません"
+        );
+
+        document.getElementById("err4").textContent =
+          "間違ってるよ";
+      }
+
+
+      document.getElementById("colorInput4").value = "";
+
+      updateDisplay();
+
+      checkAllColors();
+    }
+
+
+
+    /*
+    ------------------------------
+    問題5
+
+    正解：赤・黄
+    ------------------------------
+    */
+
+    function checkColor5() {
+
+      const input =
+        document
+        .getElementById("colorInput5")
+        .value
+        .trim();
+
+
+      const matchedColor =
+        getMatchedColor(input);
+
+
+      if (
+        matchedColor === "赤" ||
+        matchedColor === "黄"
+      ) {
+
+        if (!foundColors5.includes(matchedColor)) {
+
+          foundColors5.push(matchedColor);
+
+          localStorage.setItem(
+            "foundColors5",
+            JSON.stringify(foundColors5)
+          );
+
+        }
+
+        document.getElementById("err5").textContent = "";
+
+      } else {
+
+        alert(
+          "その色は切るべきコードではありません"
+        );
+
+        document.getElementById("err5").textContent =
+          "間違ってるよ";
+      }
+
+
+      document.getElementById("colorInput5").value = "";
+
+      updateDisplay();
+
+      checkAllColors();
+    }
+
+
+
+    /*
+    ------------------------------
+    正解済みの色を表示
+    ------------------------------
+    */
 
     function updateDisplay() {
-      document.getElementById("colorList").textContent = foundColors.join("・");
+
+      document.getElementById("colorList4")
+        .textContent =
+        foundColors4.join("・");
+
+
+      document.getElementById("colorList5")
+        .textContent =
+        foundColors5.join("・");
     }
+
+
+
+    /*
+    ------------------------------
+    4色すべて見つかったか確認
+    ------------------------------
+    */
+
+    function checkAllColors() {
+
+      if (
+        foundColors4.length === 2 &&
+        foundColors5.length === 2
+      ) {
+
+        document.getElementById("msg")
+          .textContent =
+          "爆弾解除？";
+
+        document.getElementById("backButton")
+          .style.display =
+          "inline-block";
+
+        document.getElementById("finalButton")
+          .style.display =
+          "block";
+
+      }
+
+    }
+
+
+
+    /*
+    ------------------------------
+    ページを開いた時にも確認
+
+    戻ってきた場合の復元用
+    ------------------------------
+    */
+
+    checkAllColors();
+
+
+
+    /*
+    ------------------------------
+    ページ移動
+    ------------------------------
+    */
 
     function goBack() {
       history.back();
     }
 
+
     function goToFinal() {
       window.location.href = "final.html";
     }
+
   </script>
 
 </body>
