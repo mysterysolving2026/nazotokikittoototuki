@@ -151,7 +151,20 @@
       "黄": ["き", "きいろ", "黄", "黄色"]
     };
 
-    const foundColors = [];
+    // 正解済みの色をlocalStorageから復元
+    const foundColors = JSON.parse(
+    localStorage.getItem("foundColors") || "[]"
+    );
+ 
+    // ページを開いたときに、すでに見つけた色を表示
+    updateDisplay();
+ 
+    // すでに4色そろっていた場合は、解除画面も復元
+    if (foundColors.length === 4) {
+    document.getElementById("msg").textContent = "爆弾解除？";
+    document.getElementById("backButton").style.display = "inline-block";
+    document.getElementById("finalButton").style.display = "block";
+    }
 
     function checkColor() {
       const input = document.getElementById("colorInput").value.trim();
@@ -167,8 +180,12 @@
       if (matchedColor) {
         if (!foundColors.includes(matchedColor)) {
           foundColors.push(matchedColor);
-          updateDisplay();
-        }
+ 
+        // 見つけた色を保存
+        localStorage.setItem("foundColors", JSON.stringify(foundColors));
+ 
+        updateDisplay();
+      }
         document.getElementById("err").textContent = "";
       } else {
         alert("その色は切るべきコードではありません");
