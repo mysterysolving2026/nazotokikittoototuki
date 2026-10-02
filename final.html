@@ -80,7 +80,7 @@
 
   <div id="timer" class="timer"></div>
 
-  <div class="question">最終問題！これまでの軌跡を振り返って隠された数字を見つけてね。</div>
+  <div class="question">➅A'×B'×C'=？。</div>
   <input id="finalInput" class="input-box" placeholder="数字を入力" inputmode="numeric">
   <br>
   <button onclick="checkFinal()">決定</button>
@@ -91,7 +91,7 @@
   <script>
   localStorage.setItem("currentPage", "final.html");
     
-  const TIME_LIMIT = 30 * 60 * 1000; // 制限時間30分
+  const TIME_LIMIT = 60 * 60 * 1000; // 制限時間30分
   let timerInterval;
 
   function initTimer() {
@@ -133,7 +133,7 @@
         <div class="message-black">…いやまあ解けて当然なんだけどさ、でもよかったー。</div>
         <div class="message-black">驚かせるようなことしてごめんね？</div>
         <div class="message-black">また改めて□は送るね～</div>
-        <div class="message-yellow">次はもっと難しくするね！</div>
+        <div class="message-black">次はもっと難しくするね！</div>
       `;
       document.getElementById("err").textContent = "";
     } else {
