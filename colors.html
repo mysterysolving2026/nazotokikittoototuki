@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>切りたい色コードは？</title>
+  <title>切りたいコードの色は？</title>
   <style>
     @font-face {
       font-family: "Let's go Digital";
@@ -97,7 +97,7 @@
 
   <div id="timer" class="timer"></div>
 
-  <h1>色コード入力</h1>
+  <h1>切りたいコードの色は？ 1色ずつ入力してね入力</h1>
 
   <input type="text" id="colorInput" class="input-box" placeholder="色を入力">
   <br>
@@ -172,7 +172,7 @@
         document.getElementById("err").textContent = "";
       } else {
         alert("その色は切るべきコードではありません");
-        document.getElementById("err").textContent = "間違っています";
+        document.getElementById("err").textContent = "間違ってるよ";
       }
 
       document.getElementById("colorInput").value = "";
