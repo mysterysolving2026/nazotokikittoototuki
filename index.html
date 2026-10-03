@@ -118,23 +118,46 @@
   let timerInterval = null;
 
   function playIntro() {
-    const audio = document.getElementById("introAudio");
-    audio.play();
+  const audio = document.getElementById("introAudio");
 
-    // 音声が終わったら自動でカウントダウン開始
-    audio.onended = () => {
+  // 最初から再生
+  audio.currentTime = 0;
+  audio.play();
+
+  // 音声が終わったとき
+  audio.onended = () => {
+
+    // まだタイマーが始まっていない場合だけ60分からスタート
+    if (!localStorage.getItem("endTime")) {
       startCountdown();
-      showPuzzles();
-    };
-  }
+    }
+
+    // 問題を表示
+    showPuzzles();
+  };
+}
 
   // カウントダウン開始（音声を再生するたびに30分から新しく始める）
-  function startCountdown() {
-    localStorage.removeItem("bombCleared");
-    localStorage.setItem("endTime", Date.now() + 60 * 60 * 1000); // 60分
+　function startCountdown() {
+
+  // すでにタイマーが動いている場合はリセットしない
+  const endTime = Number(localStorage.getItem("endTime"));
+
+  if (endTime > Date.now()) {
     runTimer();
+    return;
   }
 
+  // 初回だけ60分をセット
+  localStorage.removeItem("bombCleared");
+  localStorage.setItem(
+    "endTime",
+    Date.now() + 60 * 60 * 1000
+  );
+
+  runTimer();
+}
+    
   // タイマーを動かす（二重に動かないようにする）
   function runTimer() {
     if (timerInterval) clearInterval(timerInterval);
