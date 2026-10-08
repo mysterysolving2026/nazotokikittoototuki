@@ -1,71 +1,73 @@
 <!DOCTYPE html>
-<html lang="ja">
+*html lang="ja">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>最終問題</title>
+
+  <meta c*arset="UTF-8">
+
+  <meta
+    name="*iewport"
+    content="width=device*width, initial-scale=1"
+  >
+
+  <ti*le>最終問題</title>
+
   <style>
-    @font-face {
-      font-family: "Let's go Digital";
-      src: url("Let's go Digital Regular.ttf") format("truetype");
+
+    @f*nt-face {
+      font-family: "Let'* go Digital";
+      src: url("Let'* go Digital Regular.ttf") format("*ruetype");
     }
 
     * {
-      box-sizing: border-box;
+      bo*-sizing: border-box;
     }
 
-    body {
-      font-family: "MS Mincho", "Hiragino Mincho ProN", sans-serif;
+    bo*y {
+      font-family: "MS Mincho"* "Hiragino Mincho ProN", sans-seri*;
       text-align: center;
-      margin: 0;
-      padding: 40px 16px;
+      *argin: 0;
+      padding: 40px 16px*
       font-size: 24px;
-      line-height: 1.6;
+      line*height: 1.6;
     }
 
     .timer {
-      font-family: "Let's go Digital", sans-serif;
-      font-size: 64px;
+ *    font-family: "Let's go Digital*, sans-serif;
+      font-size: 64p*;
       margin-bottom: 20px;
+     *min-height: 1.2em;
     }
 
-    .question {
+    .que*tion {
       font-size: 26px;
-      margin: 0 auto 16px;
-      max-width: 600px;
+    * margin: 0 auto 16px;
+      max-wi*th: 600px;
     }
 
-    .input-box {
-      width: 100%;
-      max-width: 320px;
+    .input-box {*      width: 100%;
+      max-width* 320px;
       font-size: 24px;
-      padding: 12px;
-      text-align: center;
+   *  padding: 12px;
+      text-align:*center;
     }
 
     button {
-      font-size: 24px;
-      padding: 12px 32px;
+      *ont-size: 24px;
+      padding: 12p* 32px;
       min-height: 52px;
-      margin-top: 14px;
-      color: black;
-      background-color: white;
+   *  margin-top: 14px;
+      color: b*ack;
+      background-color: white*
       border: 2px solid black;
-      border-radius: 6px;
+  *   border-radius: 6px;
     }
 
-    .message-black {
-      font-size: 26px;
+    *message-black {
+      font-size: 2*px;
       margin: 16px auto 0;
-      max-width: 600px;
-      color: black;
-    }
-
-    .message-yellow {
-      font-size: 26px;
-      margin: 16px auto 0;
-      max-width: 600px;
-      color: #FFFF00;
+   *  max-width: 600px;
+      color: b*ack;
     }
 
     .error {
@@ -74,73 +76,288 @@
       margin-top: 10px;
       min-height: 1.6em;
     }
+
   </style>
+
 </head>
+
 <body>
 
-  <div id="timer" class="timer"></div>
+  <div
+    id="timer"
+    class="timer"
+  ></div>
 
-  <div class="question">➅A'×B'×C'=？。</div>
-  <input id="finalInput" class="input-box" placeholder="数字を入力" inputmode="numeric">
+
+  <div class="question">
+    ➅A'×B'×C'=？。
+  </div>
+
+
+  <input
+    id="finalInput"
+    class="input-box"
+    placeholder="数字を入力"
+    inputmode="numeric"
+  >
+
   <br>
-  <button onclick="checkFinal()">決定</button>
 
-  <div id="msg" class="message"></div>
-  <div id="err" class="error"></div>
+  <button onclick="checkFinal()">
+    決定
+  </button>
+
+
+  <div id="msg"></div>
+
+  <div
+    id="err"
+    class="error"
+  ></div>
+
 
   <script>
-  localStorage.setItem("currentPage", "final.html");
-    
-  const TIME_LIMIT = 60 * 60 * 1000; // 制限時間30分
-  let timerInterval;
 
-  function initTimer() {
-    // 解除済みならタイマーを動かさない
-    if (localStorage.getItem("bombCleared") === "true") return;
+    /*
+    =========================
+    基本設定
+    =========================
+    */
 
-    if (!localStorage.getItem("endTime")) {
-      localStorage.setItem("endTime", Date.now() + TIME_LIMIT);
+    localStorage.setItem(
+      "currentPage",
+      "final.html"
+    );
+
+    let timerInterval = null;
+
+
+    /*
+    =========================
+    タイマー
+    =========================
+    */
+
+    function runTimer() {
+
+      if (
+        localStorage.getItem(
+          "bombCleared"
+        ) === "true"
+      ) {
+        return;
+      }
+
+
+      if (timerInterval !== null) {
+        clearInterval(timerInterval);
+      }
+
+
+      updateTimer();
+
+
+      timerInterval =
+        setInterval(
+          updateTimer,
+          1000
+        );
     }
-    updateTimer();
-    timerInterval = setInterval(updateTimer, 1000);
-  }
 
-  function updateTimer() {
-    const endTime = Number(localStorage.getItem("endTime"));
-    const remaining = Math.floor((endTime - Date.now()) / 1000);
 
-    if (remaining <= 0) {
-      window.location.href = "gameover.html";
-      return;
+    function updateTimer() {
+
+      /*
+      解除済みなら何もしない
+      */
+
+      if (
+        localStorage.getItem(
+          "bombCleared"
+        ) === "true"
+      ) {
+        return;
+      }
+
+
+      const savedEndTime =
+        localStorage.getItem("endTime");
+
+
+      /*
+      タイマーが無ければ
+      indexへ戻る
+      */
+
+      if (savedEndTime === n*ll) {
+
+        window.location.hre* =
+          "index.html";
+
+      * return;
+      }
+
+
+      const end*ime =
+        Number(savedEndTime)*
+
+
+      const remaining =
+       *Math.ceil(
+          (endTime - Da*e.now()) / 1000
+        );
+
+
+     *if (remaining <= 0) {
+
+        if (timerInterval !== null) {
+          clearInterval(timerInterval);
+        }
+
+        window.location.replace(
+          "gameover.html"
+        );
+
+        return;
+      }
+
+
+      const minutes =
+        String(
+          Math.floor(remaining / 60)
+        ).padStart(2, "0");
+
+
+      const seconds =
+        String(
+          remaining % 60
+        ).padStart(2, "0");
+
+
+      document.getElementById(
+        "timer"
+      ).textContent =
+        `${minutes}:${seconds}`;
     }
 
-    const m = String(Math.floor(remaining / 60)).padStart(2, "0");
-    const s = String(remaining % 60).padStart(2, "0");
-    document.getElementById("timer").textContent = `${m}:${s}`;
-  }
 
-  initTimer();
+    /*
+    =========================
+    初期化
+    =========================
+    */
 
-  function checkFinal() {
-    const v = document.getElementById("finalInput").value.trim();
-    if (v === "2070") {
-      clearInterval(timerInterval);
-      localStorage.setItem("bombCleared", "true");
+    if (
+      localStorage.getItem(
+        "bombCleared"
+      ) !== "true"
+    ) {
 
-      document.getElementById("msg").innerHTML = `
-        <div class="message-black">爆弾解除　おめでとう</div>
-        <div class="message-black">だよねだよね！信じてたよ！</div>
-        <div class="message-black">…いやまあ解けて当然なんだけどさ、でもよかったー。</div>
-        <div class="message-black">驚かせるようなことしてごめんね？</div>
-        <div class="message-black">また改めて□は送るね～</div>
-        <div class="message-black">次はもっと難しくするね！</div>
-      `;
-      document.getElementById("err").textContent = "";
-    } else {
-      document.getElementById("msg").textContent = "";
-      document.getElementById("err").textContent = "間違ってるよ";
+      runTimer();
     }
-  }
+
+
+    /*
+    =========================
+    最終問題
+    =========================
+    */
+
+    function checkFinal() {
+
+      const v =
+        document.getElementById(
+          "finalInput"
+        )
+        .value
+        .trim();
+
+
+      if (v === "2070") {
+
+        /*
+        タイマー停止
+        */
+
+        if (timerInterval !== null) {
+          clearInterval(timerInterval);
+        }
+
+
+        /*
+        爆弾解除を保存
+        */
+
+        localStorage.setItem(
+          "bombCleared",
+          "true"
+        );
+
+
+        /*
+        解除した瞬間の残り時間を
+        以後使わないため削除
+        */
+
+        localStorage.removeItem*
+          "endTime"
+        );
+
+
+*       document.getElementById(
+  *       "timer"
+        ).textConte*t = "";
+
+
+        document.getElem*ntById(
+          "msg"
+        ).*nnerHTML = `
+
+          <div class*"message-black">
+            爆弾解除　*めでとう
+          </div>
+
+          <div class="message-black">
+            だよねだよね！信じてたよ！
+          </div>
+
+          <div class="message-black">
+            …いやまあ解けて当然なんだけどさ、でもよかったー。
+          </div>
+
+          <div class="message-black">
+            驚かせるようなことしてごめんね？
+          </div>
+
+          <div class="message-black">
+            また改めて□は送るね～
+          </div>
+
+          <div class="message-black">
+            次はもっと難しくするね！
+          </div>
+        `;
+
+
+        document.getElementById(
+          "err"
+        ).textContent = "";
+
+
+      } else {
+
+        document.getElementById(
+          "msg"
+        ).textContent = "";
+
+
+        document.getElementById(
+          "err"
+        ).textContent =
+          "間違ってるよ";
+      }
+    }
+
   </script>
 
 </body>
