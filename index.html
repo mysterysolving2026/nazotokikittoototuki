@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>杏ちゃんの謎解き</title>
+
   <style>
-    /* フォントファイル名は digital.ttf に変更して、HTMLと同じフォルダに置く */
     @font-face {
       font-family: "Let's go Digital";
       src: url("Let's go Digital Regular.ttf") format("truetype");
@@ -29,6 +29,7 @@
       font-family: "Let's go Digital", sans-serif;
       font-size: 64px;
       margin: 20px;
+      min-height: 1.2em;
     }
 
     .question {
@@ -71,17 +72,19 @@
     }
   </style>
 </head>
+
 <body>
 
-  <!-- 音声ボタン -->
-  <audio id="introAudio" src="beep-02.mp3"></audio>
-  <button id="playButton" onclick="playIntro()">音声を再生</button>
+  beep-02.mp3</audio>
 
-  <!-- カウントダウン -->
+  <button id="playButton" onclick="playIntro()">
+    音声を再生
+  </button>
+
   <div id="timer" class="timer"></div>
 
-  <!-- 小謎3問（最初は非表示） -->
   <div id="puzzles" style="display:none;">
+
     <div class="question">
       ➀：杏ちゃんのMBTIは？
       <br>
@@ -109,135 +112,262 @@
       <div id="e3" class="error"></div>
     </div>
 
-    <button id="nextButton" onclick="goToColors()">次のページへ</button>
+    <button id="nextButton" onclick="goToColors()">
+      次のページへ
+    </button>
+
   </div>
 
   <script>
-  localStorage.setItem("currentPage", "index.html");
 
-  let timerInterval = null;
+    /*
+    =========================
+    基本設定
+    =========================
+    */
 
-  function playIntro() {
-  const audio = document.getElementById("introAudio");
+    localStorage.setItem("currentPage", "index.html");
 
-  // 最初から再生
-  audio.currentTime = 0;
-  audio.play();
+    const GAME_TIME = 60 * 60 * 1000;
 
-  // 音声が終わったとき
-  audio.onended = () => {
+    let timerInterval = null;
 
-    // まだタイマーが始まっていない場合だけ60分からスタート
-    if (!localStorage.getItem("endTime")) {
-      startCountdown();
+    /*
+    =========================
+    音声
+    =========================
+    */
+
+    function playIntro() {
+
+      const audio = document.getElementById("introAudio");
+
+      // 押すたびに音声を最初から再生
+      audio.currentTime = 0;
+      audio.play();
+
+      audio.onended = () => {
+
+        /*
+        endTimeそのものが存在しない場合だけ、
+        新しいゲームとして60分を設定する。
+
+        すでにendTimeがある場合は絶対に変更しない。
+        */
+
+        if (localStorage.getItem("endTime") === null) {
+
+          localStorage.removeItem("bombCleared");
+
+          localStorage.setItem(
+            "endTime",
+            String(Date.now() + GAME_TIME)
+          );
+
+          runTimer();
+        }
+
+        showPuzzles();
+      };
     }
 
-    // 問題を表示
-    showPuzzles();
-  };
-}
+    /*
+    =========================
+    タイマー
+    =========================
+    */
 
-  // カウントダウン開始（音声を再生するたびに30分から新しく始める）
-　function startCountdown() {
+    function runTimer() {
 
-  // すでにタイマーが動いている場合はリセットしない
-  const endTime = Number(localStorage.getItem("endTime"));
+      if (timerInterval !== null) {
+        clearInterval(timerInterval);
+      }
 
-  if (endTime > Date.now()) {
-    runTimer();
-    return;
-  }
+      updateTimer();
 
-  // 初回だけ60分をセット
-  localStorage.removeItem("bombCleared");
-  localStorage.setItem(
-    "endTime",
-    Date.now() + 60 * 60 * 1000
-  );
-
-  runTimer();
-}
-    
-  // タイマーを動かす（二重に動かないようにする）
-  function runTimer() {
-    if (timerInterval) clearInterval(timerInterval);
-    updateTimer();
-    timerInterval = setInterval(updateTimer, 1000);
-  }
-
-  // カウントダウン表示更新
-  function updateTimer() {
-    const endTime = Number(localStorage.getItem("endTime"));
-    const remaining = Math.floor((endTime - Date.now()) / 1000);
-
-    if (remaining <= 0) {
-      window.location.href = "gameover.html";
-      return;
+      timerInterval = setInterval(
+        updateTimer,
+        1000
+      );
     }
 
-    const m = String(Math.floor(remaining / 60)).padStart(2, "0");
-    const s = String(remaining % 60).padStart(2, "0");
-    document.getElementById("timer").textContent = `${m}:${s}`;
-  }
 
-  // 小謎を表示
-  function showPuzzles() {
-    document.getElementById("puzzles").style.display = "block";
-  }
+    function updateTimer() {
 
-  let q1ok = false, q2ok = false, q3ok = false;
+      const savedEndTime =
+        localStorage.getItem("endTime");
 
-  function checkAll() {
-    if (q1ok && q2ok && q3ok) {
-      document.getElementById("nextButton").style.display = "inline-block";
+      // まだ一度もゲームを開始していない
+      if (savedEndTime === null) {
+
+        document.getElementById("timer")
+          .textContent = "";
+
+        return;
+      }
+
+      const endTime = Number(savedEndTime);
+
+      const remaining =
+        Math.ceil(
+          (endTime - Date.now()) / 1000
+        );
+
+      // 時間切れ
+      if (remaining <= 0) {
+
+        if (timerInterval !== null) {
+          clearInterval(timerInterval);
+        }
+
+        window.location.replace("gameover.html");
+
+        return;
+      }
+
+      const minutes =
+        String(
+          Math.floor(remaining / 60)
+        ).padStart(2, "0");
+
+      const seconds =
+        String(
+          remaining % 60
+        ).padStart(2, "0");
+
+      document.getElementById("timer")
+        .textContent =
+        `${minutes}:${seconds}`;
     }
-  }
 
-  function checkQ1() {
-    const v = document.getElementById("q1").value.trim();
-    if (v === "3635") {
-      q1ok = true;
-      document.getElementById("e1").textContent = "正解！";
-    } else {
-      q1ok = false;
-      document.getElementById("e1").textContent = "間違ってるよ";
+    /*
+    =========================
+    問題表示
+    =========================
+    */
+
+    function showPuzzles() {
+
+      document.getElementById("puzzles")
+        .style.display = "block";
     }
-    checkAll();
-  }
 
-  function checkQ2() {
-    const v = document.getElementById("q2").value.trim();
-    if (v === "4701") {
-      q2ok = true;
-      document.getElementById("e2").textContent = "正解！";
-    } else {
-      q2ok = false;
-      document.getElementById("e2").textContent = "間違ってるよ";
+
+    let q1ok = false;
+    let q2ok = false;
+    let q3ok = false;
+
+
+    function checkAll() {
+
+      if (q1ok && q2ok && q3ok) {
+
+        document.getElementById("nextButton")
+          .style.display = "inline-block";
+      }
     }
-    checkAll();
-  }
 
-  function checkQ3() {
-    const v = document.getElementById("q3").value.trim();
-    if (v === "アンブレラサンセット") {
-      q3ok = true;
-      document.getElementById("e3").textContent = "正解！";
-    } else {
-      q3ok = false;
-      document.getElementById("e3").textContent = "間違ってるよ";
+
+    function checkQ1() {
+
+      const v =
+        document.getElementById("q1")
+        .value
+        .trim();
+
+      if (v === "3635") {
+
+        q1ok = true;
+
+        document.getElementById("e1")
+          .textContent = "正解！";
+
+      } else {
+
+        q1ok = false;
+
+        document.getElementById("e1")
+          .textContent = "間違ってるよ";
+      }
+
+      checkAll();
     }
-    checkAll();
-  }
 
-  function goToColors() {
-    window.location.href = "colors.html";
-  }
 
-  // 「続ける」で戻ってきたときは、音声なしで問題とタイマーを表示
-  if (Number(localStorage.getItem("endTime")) > Date.now()) {
-    runTimer();
-    showPuzzles();
-  }
+    function checkQ2() {
+
+      const v =
+        document.getElementById("q2")
+        .value
+        .trim();
+
+      if (v === "4701") {
+
+        q2ok = true;
+
+        document.getElementById("e2")
+          .textContent = "正解！";
+
+      } else {
+
+        q2ok = false;
+
+        document.getElementById("e2")
+          .textContent = "間違ってるよ";
+      }
+
+      checkAll();
+    }
+
+
+    function checkQ3() {
+
+      const v =
+        document.getElementById("q3")
+        .value
+        .trim();
+
+      if (v === "アンブレラサンセット") {
+
+        q3ok = true;
+
+        document.getElementById("e3")
+          .textContent = "正解！";
+
+      } else {
+
+        q3ok = false;
+
+        document.getElementById("e3")
+          .textContent = "間違ってるよ";
+      }
+
+      checkAll();
+    }
+
+
+    function goToColors() {
+      window.location.href = "colors.html";
+    }
+
+    /*
+    =========================
+    index.htmlを開いたとき
+    =========================
+    */
+
+    const existingEndTime =
+      localStorage.getItem("endTime");
+
+    if (existingEndTime !== null) {
+
+      // ゲームがすでに開始されている場合
+      // 音声を聞かなくてもタイマーと問題を表示
+
+      runTimer();
+      showPuzzles();
+    }
+
   </script>
 
 </body>
