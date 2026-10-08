@@ -1,10 +1,19 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+
   <title>ゲームオーバー</title>
+
   <style>
+
     * {
       box-sizing: border-box;
     }
@@ -48,7 +57,6 @@
       text-decoration: none;
     }
 
-    /* 「続ける」ボタン */
     .continue-button {
       font-family: "MS Mincho", "Hiragino Mincho ProN", serif;
       margin-top: 24px;
@@ -60,42 +68,114 @@
       border: 2px solid black;
       border-radius: 6px;
     }
+
   </style>
+
 </head>
+
 <body>
 
-  <h1>あーあ、信じてたのに...</h1>
+  <h1>
+    あーあ、信じてたのに...
+  </h1>
 
-  <video src="bikkuribako.mp4" autoplay playsinline controls></video>
 
-  <div class="message">残念だったね</div>
+  bikkuribako.mp4</video>
 
-  <div>
-    <a href="karuta.pdf" target="_blank" class="link-button">解説はこっち</a>
+
+  <div class="message">
+    残念だったね
   </div>
 
-  <!-- 最後の行：続けるボタン -->
+
   <div>
-    <button class="continue-button" onclick="continueGame()">続ける</button>
+
+    <a
+      href="karuta.pdf"
+      target="_blank"
+      class="link-button"
+    >
+      解説はこっち
+    </a>
+
   </div>
+
+
+  <div>
+
+    <button
+      class="continue-button"
+      onclick="continueGame()"
+    >
+      続ける
+    </button>
+
+  </div>
+
 
   <script>
-    // 続けたときにもらえる時間（分）。好きな数字に変えてOK
+
+    /*
+    =========================
+    続ける時間
+    =========================
+    */
+
     const CONTINUE_MINUTES = 10;
 
-    // ゲームオーバーになったらタイマー情報は消しておく
-    localStorage.removeItem("endTime");
-    localStorage.removeItem("bombCleared");
+
+    /*
+    =========================
+    ゲームオーバー画面では
+    endTimeを削除しない
+    =========================
+
+    ここが以前との大きな変更点です。
+
+    「続ける」を押したときだけ
+    新しいendTimeを設定します。
+    */
+
+
+    localStorage.removeItem(
+      "bombCleared"
+    );
+
+
+    /*
+    =========================
+    続ける
+    =========================
+    */
 
     function continueGame() {
-      // 新しい制限時間をセット
-      localStorage.setItem("endTime", Date.now() + CONTINUE_MINUTES * 60 * 1000);
 
-      // 最後にいたページへ戻る（記録が無ければ最初のページへ）
-      const page = localStorage.getItem("currentPage") || "index.html";
-      window.location.href = page;
-    }
-  </script>
+      /*
+      現在時刻から10分後を
+      新しい終了時刻にする
+      */
 
-</body>
-</html>
+      const newEndTime =
+        Date.now()
+        +
+        CONTINUE_MINUTES
+        * 60
+        * 1000;
+
+
+      localStorage.setItem(
+        "endTime",
+        String(newEndTime)
+      );
+
+
+      /*
+      最後にいた場所
+      */
+
+      let page =
+        localStorage.getItem(
+          "currentPage"
+        );
+
+
