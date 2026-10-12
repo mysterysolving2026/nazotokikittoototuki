@@ -124,58 +124,23 @@
     const CONTINUE_MINUTES = 10;
 
 
-    /*
-    =========================
-    ゲームオーバー画面では
-    endTimeを削除しない
-    =========================
 
-    ここが以前との大きな変更点です。
+        // ゲームオーバーになったらタイマー情報は消しておく
+    localStorage.removeItem("endTime");
+    localStorage.removeItem("bombCleared");
 
-    「続ける」を押したときだけ
-    新しいendTimeを設定します。
-    */
-
-
-    localStorage.removeItem(
-      "bombCleared"
-    );
-
-
-    /*
-    =========================
-    続ける
-    =========================
-    */
 
     function continueGame() {
-
-      /*
-      現在時刻から10分後を
-      新しい終了時刻にする
-      */
-
-      const newEndTime =
-        Date.now()
-        +
-        CONTINUE_MINUTES
-        * 60
-        * 1000;
+      // 新しい制限時間をセット
+      localStorage.setItem("endTime", Date.now() + CONTINUE_MINUTES * 60 * 1000);
 
 
-      localStorage.setItem(
-        "endTime",
-        String(newEndTime)
-      );
+      // 最後にいたページへ戻る（記録が無ければ最初のページへ）
+      const page = localStorage.getItem("currentPage") || "index.html";
+      window.location.href = page;
+    }
+  </script>
 
 
-      /*
-      最後にいた場所
-      */
-
-      let page =
-        localStorage.getItem(
-          "currentPage"
-        );
-
-
+</body>
+</html>
