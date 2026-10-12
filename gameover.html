@@ -1,22 +1,14 @@
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
-
   <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1"
-  >
-
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ゲームオーバー</title>
-
   <style>
-
     * {
       box-sizing: border-box;
     }
+
 
     body {
       font-family: "MS Mincho", "Hiragino Mincho ProN", serif;
@@ -27,10 +19,12 @@
       line-height: 1.6;
     }
 
+
     h1 {
       font-size: 34px;
       margin: 10px 0 20px;
     }
+
 
     .message {
       font-size: 32px;
@@ -38,12 +32,14 @@
       color: red;
     }
 
+
     video {
       margin-top: 20px;
       width: 100%;
       max-width: 480px;
       height: auto;
     }
+
 
     .link-button {
       display: inline-block;
@@ -57,6 +53,8 @@
       text-decoration: none;
     }
 
+
+    /* 「続ける」ボタン */
     .continue-button {
       font-family: "MS Mincho", "Hiragino Mincho ProN", serif;
       margin-top: 24px;
@@ -68,64 +66,37 @@
       border: 2px solid black;
       border-radius: 6px;
     }
-
   </style>
-
 </head>
-
 <body>
 
-  <h1>
-    あーあ、信じてたのに...
-  </h1>
+
+  <h1>あーあ、信じてたのに...</h1>
 
 
-  bikkuribako.mp4</video>
+  <video src="bikkuribako.mp4" autoplay playsinline controls></video>
 
 
-  <div class="message">
-    残念だったね
-  </div>
+  <div class="message">残念だったね</div>
 
 
   <div>
-
-    <a
-      href="karuta.pdf"
-      target="_blank"
-      class="link-button"
-    >
-      解説はこっち
-    </a>
-
+    <a href="karuta.pdf" target="_blank" class="link-button">解説はこっち</a>
   </div>
 
 
+  <!-- 最後の行：続けるボタン -->
   <div>
-
-    <button
-      class="continue-button"
-      onclick="continueGame()"
-    >
-      続ける
-    </button>
-
+    <button class="continue-button" onclick="continueGame()">続ける</button>
   </div>
 
 
   <script>
-
-    /*
-    =========================
-    続ける時間
-    =========================
-    */
-
+    // 続けたときにもらえる時間（分）。好きな数字に変えてOK
     const CONTINUE_MINUTES = 10;
 
 
-
-        // ゲームオーバーになったらタイマー情報は消しておく
+    // ゲームオーバーになったらタイマー情報は消しておく
     localStorage.removeItem("endTime");
     localStorage.removeItem("bombCleared");
 
