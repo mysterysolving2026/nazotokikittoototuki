@@ -120,12 +120,6 @@
 
   <script>
 
-    /*
-    =========================
-    基本設定
-    =========================
-    */
-
     localStorage.setItem("currentPage", "index.html");
 
     const GAME_TIME = 60 * 60 * 1000;
@@ -134,27 +128,21 @@
 
     /*
     =========================
-    音声
+    音声再生
     =========================
     */
 
     function playIntro() {
 
-      const audio = document.getElementById("introAudio");
+      const audio =
+        document.getElementById("introAudio");
 
-      // 押すたびに音声を最初から再生
       audio.currentTime = 0;
       audio.play();
 
       audio.onended = () => {
 
-        /*
-        endTimeそのものが存在しない場合だけ、
-        新しいゲームとして60分を設定する。
-
-        すでにendTimeがある場合は絶対に変更しない。
-        */
-
+        // 初回のみ60分スタート
         if (localStorage.getItem("endTime") === null) {
 
           localStorage.removeItem("bombCleared");
@@ -163,10 +151,9 @@
             "endTime",
             String(Date.now() + GAME_TIME)
           );
-
-          runTimer();
         }
 
+        runTimer();
         showPuzzles();
       };
     }
@@ -185,42 +172,37 @@
 
       updateTimer();
 
-      timerInterval = setInterval(
-        updateTimer,
-        1000
-      );
+      timerInterval =
+        setInterval(updateTimer, 1000);
     }
-
 
     function updateTimer() {
 
       const savedEndTime =
         localStorage.getItem("endTime");
 
-      // まだ一度もゲームを開始していない
+      // まだ開始前
       if (savedEndTime === null) {
-
         document.getElementById("timer")
           .textContent = "";
-
         return;
       }
 
-      const endTime = Number(savedEndTime);
+      const endTime =
+        Number(savedEndTime);
 
       const remaining =
         Math.ceil(
           (endTime - Date.now()) / 1000
         );
 
-      // 時間切れ
       if (remaining <= 0) {
 
-        if (timerInterval !== null) {
-          clearInterval(timerInterval);
-        }
+        clearInterval(timerInterval);
 
-        window.location.replace("gameover.html");
+        window.location.replace(
+          "gameover.html"
+        );
 
         return;
       }
@@ -252,21 +234,30 @@
         .style.display = "block";
     }
 
+    /*
+    =========================
+    問題判定
+    =========================
+    */
 
     let q1ok = false;
     let q2ok = false;
     let q3ok = false;
 
-
     function checkAll() {
 
-      if (q1ok && q2ok && q3ok) {
+      if (
+        q1ok &&
+        q2ok &&
+        q3ok
+      ) {
 
-        document.getElementById("nextButton")
-          .style.display = "inline-block";
+        document.getElementById(
+          "nextButton"
+        ).style.display =
+          "inline-block";
       }
     }
-
 
     function checkQ1() {
 
@@ -293,7 +284,6 @@
       checkAll();
     }
 
-
     function checkQ2() {
 
       const v =
@@ -318,7 +308,6 @@
 
       checkAll();
     }
-
 
     function checkQ3() {
 
@@ -345,6 +334,11 @@
       checkAll();
     }
 
+    /*
+    =========================
+    次のページ
+    =========================
+    */
 
     function goToColors() {
       window.location.href = "colors.html";
@@ -352,7 +346,7 @@
 
     /*
     =========================
-    index.htmlを開いたとき
+    再訪時の処理
     =========================
     */
 
@@ -360,9 +354,6 @@
       localStorage.getItem("endTime");
 
     if (existingEndTime !== null) {
-
-      // ゲームがすでに開始されている場合
-      // 音声を聞かなくてもタイマーと問題を表示
 
       runTimer();
       showPuzzles();
