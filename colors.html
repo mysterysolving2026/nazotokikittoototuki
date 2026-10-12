@@ -222,331 +222,303 @@
     =========================
     */
 
-    localStorage.setItem(
-      "currentPage",
-      "colors.html"
+    localStorage.setItem("currentPage", "colors.html");
+
+let timerInterval = null;
+
+/*
+=========================
+タイマー
+=========================
+*/
+
+function runTimer() {
+
+  if (timerInterval) {
+    clearInterval(timerInterval);
+  }
+
+  updateTimer();
+
+  timerInterval = setInterval(
+    updateTimer,
+    1000
+  );
+}
+
+function updateTimer() {
+
+  const savedEndTime =
+    localStorage.getItem("endTime");
+
+  if (savedEndTime === null) {
+
+    window.location.href =
+      "index.html";
+
+    return;
+  }
+
+  const endTime =
+    Number(savedEndTime);
+
+  const remaining =
+    Math.ceil(
+      (endTime - Date.now()) / 1000
     );
 
-    let timerInterval = null;
+  if (remaining <= 0) {
 
-    /*
-    =========================
-    タイマー
-    =========================
+    clearInterval(timerInterval);
 
-    colors.htmlでは絶対に
-    新しい60分を作らない。
+    window.location.replace(
+      "gameover.html"
+    );
 
-    index.htmlで作られた
-    endTimeだけを使用する。
-    =========================
-    */
+    return;
+  }
 
-    function runTimer() {
+  const minutes =
+    String(
+      Math.floor(remaining / 60)
+    ).padStart(2, "0");
 
-      if (timerInterval !== null) {
-        clearInterval(timerInterval);
-      }
+  const seconds =
+    String(
+      remaining % 60
+    ).padStart(2, "0");
 
-      updateTimer();
+  document.getElementById("timer")
+    .textContent =
+    `${minutes}:${seconds}`;
+}
 
-      timerInterval =
-        setInterval(updateTimer, 1000);
+runTimer();
+
+/*
+=========================
+色変換
+=========================
+*/
+
+const colorMap = {
+
+  "赤": [
+    "赤",
+    "赤色",
+    "あか",
+    "あかいろ"
+  ],
+
+  "青": [
+    "青",
+    "青色",
+    "あお",
+    "あおいろ"
+  ],
+
+  "黒": [
+    "黒",
+    "黒色",
+    "くろ",
+    "くろいろ"
+  ],
+
+  "黄": [
+    "黄",
+    "黄色",
+    "き",
+    "きいろ"
+  ]
+
+};
+
+/*
+=========================
+保存済み復元
+=========================
+*/
+
+const foundColors4 =
+  JSON.parse(
+    localStorage.getItem(
+      "foundColors4"
+    ) || "[]"
+  );
+
+const foundColors5 =
+  JSON.parse(
+    localStorage.getItem(
+      "foundColors5"
+    ) || "[]"
+  );
+
+/*
+=========================
+色判定
+=========================
+*/
+
+function getMatchedColor(input) {
+
+  const text = input.trim();
+
+  for (const key in colorMap) {
+
+    if (
+      colorMap[key].includes(text)
+    ) {
+      return key;
     }
+  }
 
+  return null;
+}
 
-    function updateTimer() {
+/*
+=========================
+④ 青・黒
+=========================
+*/
 
-      const savedEndTime =
-        localStorage.getItem("endTime");
+function checkColor4() {
 
-      /*
-      本来はindex.htmlから来るため
-      endTimeが存在する。
+  const input =
+    document
+      .getElementById("colorInput4")
+      .value;
 
-      無い場合はindex.htmlへ戻す。
-      */
+  const matchedColor =
+    getMatchedColor(input);
 
-      if (savedEndTime === null* {
+  if (
+    matchedColor === "青"
+    ||
+    matchedColor === "黒"
+  ) {
 
-        window.location.href =*"index.html";
+    if (
+      !foundColors4.includes(
+        matchedColor
+      )
+    ) {
 
-        return;
-   *  }
-
-
-      const endTime =
-      * Number(savedEndTime);
-
-      cons* remaining =
-        Math.ceil(
-  *       (endTime - Date.now()) / 10*0
-        );
-
-
-      if (remaining*<= 0) {
-
-        if (timerInterval !== null) {
-          clearInterval(timerInterval);
-        }
-
-        window.location.replace(
-          "gameover.html"
-        );
-
-        return;
-      }
-
-
-      const minutes =
-        String(
-          Math.floor(remaining / 60)
-        ).padStart(2, "0");
-
-
-      const seconds =
-        String(
-          remaining % 60
-        ).padStart(2, "0");
-
-
-      document.getElementById("timer")
-        .textContent =
-        `${minutes}:${seconds}`;
-    }
-
-
-    runTimer();
-
-
-    /*
-    =========================
-    色
-    =========================
-    */
-
-    const colorMap = {
-
-      "赤": [
-        "あか",
-        "あかいろ",
-        "赤",
-        "赤色"
-      ],
-
-      "青": [
-        "あお",
-        "あおいろ",
-        "青",
-        "青色"
-      ],
-
-      "黒": [
-        "くろ",
-        "くろいろ",
-        "黒",
-        "黒色"
-      ],
-
-      "黄": [
-        "き",
-        "きいろ",
-        "黄",
-        "黄色"
-      ]
-
-    };
-
-
-    /*
-    =========================
-    保存済み回答を復元
-    =========================
-    */
-
-    const foundColors4 =
-      JSON.parse(
-        localStorage.getItem(
-          "foundColors4"
-        ) || "[]"
+      foundColors4.push(
+        matchedColor
       );
 
+      localStorage.setItem(
+        "foundColors4",
+        JSON.stringify(
+          foundColors4
+        )
+      );
+    }
 
-    const foundColors5 =
-      JSON.parse(
-        localStorage.getItem(
-          "foundColors5"
-        ) || "[]"
+    document.getElementById(
+      "err4"
+    ).textContent = "";
+
+  } else {
+
+    alert(
+      "その色は切るべきコードではありません"
+    );
+
+    document.getElementById(
+      "err4"
+    ).textContent =
+      "間違ってるよ";
+  }
+
+  document.getElementById(
+    "colorInput4"
+  ).value = "";
+
+  updateDisplay();
+  checkAllColors();
+}
+
+/*
+=========================
+⑤ 赤・黄
+=========================
+*/
+
+function checkColor5() {
+
+  const input =
+    document
+      .getElementById("colorInput5")
+      .value;
+
+  const matchedColor =
+    getMatchedColor(input);
+
+  if (
+    matchedColor === "赤"
+    ||
+    matchedColor === "黄"
+  ) {
+
+    if (
+      !foundColors5.includes(
+        matchedColor
+      )
+    ) {
+
+      foundColors5.push(
+        matchedColor
       );
 
-
-    /*
-    =========================
-    色を判定
-    =========================
-    */
-
-    function getMatchedColor(input) {
-
-      for (const key in colorMap) {
-
-        if (
-          colorMap[key].includes(input)
-        ) {
-          return key;
-        }
-      }
-
-      return null;
+      localStorage.setItem(
+        "foundColors5",
+        JSON.stringify(
+          foundColors5
+        )
+      );
     }
 
+    document.getElementById(
+      "err5"
+    ).textContent = "";
 
-    /*
-    =========================
-    問題4
-    正解：青・黒
-    =========================
-    */
+  } else {
 
-    function checkColor4() {
+    alert(
+      "その色は切るべきコードではありません"
+    );
 
- *    const input =
-        document*        .getElementById("colorInpu*4")
-        .value
-        .trim()*
+    document.getElementById(
+      "err5"
+    ).textContent =
+      "間違ってるよ";
+  }
 
+  document.getElementById(
+    "colorInput5"
+  ).value = "";
 
-      const matchedColor =
-    *   getMatchedColor(input);
+  updateDisplay();
+  checkAllColors();
+}
 
+/*
+=========================
+表示更新
+=========================
+*/
 
-     *if (
-        matchedColor === "青" *|
-        matchedColor === "黒"
-   *  ) {
+function updateDisplay() {
 
-        if (
-          !fou*dColors4.includes(
-            mat*hedColor
-          )
-        ) {
+  document.getElementById(
+    "colorList4"
+  ).textContent =
+    foundColors4.join("・");
 
-*         foundColors4.push(
-      *     matchedColor
-          );
-
-          localStorage.setItem(
-            "foundColors4",
-            JSON.stringify(foundColors4)
-          );
-        }
-
-        document.getElementById("err4")
-          .textContent = "";
-
-      } else {
-
-        alert(
-          "その色は切るべきコードではありません"
-        );
-
-        document.getElementById("err4")
-          .textContent =
-          "間違ってるよ";
-      }
-
-
-      document.getElementById(
-        "colorInput4"
-      ).value = "";
-
-
-      updateDisplay();
-      checkAllColors();
-    }
-
-
-    /*
-    =========================
-    問題5
-    正解：赤・黄
-    =========================
-    */
-
-    function checkColor5() {
-
- *    const input =
-        document*        .getElementById("colorInpu*5")
-        .value
-        .trim()*
-
-
-      const matchedColor =
-    *   getMatchedColor(input);
-
-
-     *if (
-        matchedColor === "赤" *|
-        matchedColor === "黄"
-   *  ) {
-
-        if (
-          !fou*dColors5.includes(
-            mat*hedColor
-          )
-        ) {
-
-*         foundColors5.push(
-      *     matchedColor
-          );
-
-          localStorage.setItem(
-            "foundColors5",
-            JSON.stringify(foundColors5)
-          );
-        }
-
-        document.getElementById("err5")
-          .textContent = "";
-
-      } else {
-
-        alert(
-          "その色は切るべきコードではありません"
-        );
-
-        document.getElementById("err5")
-          .textContent =
-          "間違ってるよ";
-      }
-
-
-      document.getElementById(
-        "colorInput5"
-      ).value = "";
-
-
-      updateDisplay();
-      checkAllColors();
-    }
-
-
-    /*
-    =========================
-    表示
-    =========================
-    */
-
-    function updateDisplay() {
-
-      document.getElementById(
-        "colorList4"
-      ).textContent =
-        foundColors4.join("・");
-
-
-      document.getElementById(
-        "colorList5"
+  document.getElementById(
+    "colorList5"
+ 
       ).textContent =
         foundColors5.join("・");
     }
