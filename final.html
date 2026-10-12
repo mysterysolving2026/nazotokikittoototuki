@@ -1,73 +1,73 @@
 <!DOCTYPE html>
-*html lang="ja">
+<html lang="ja">
 
 <head>
 
-  <meta c*arset="UTF-8">
+  <meta charset="UTF-8">
 
   <meta
-    name="*iewport"
-    content="width=device*width, initial-scale=1"
+    name="viewport"
+    content="width=device-width, initial-scale=1"
   >
 
-  <ti*le>最終問題</title>
+  <title>最終問題</title>
 
   <style>
 
-    @f*nt-face {
-      font-family: "Let'* go Digital";
-      src: url("Let'* go Digital Regular.ttf") format("*ruetype");
+    @font-face {
+      font-family: "Let's go Digital";
+      src: url("Let's go Digital Regular.ttf") format("truetype");
     }
 
-    * {
-      bo*-sizing: border-box;
+      {
+      box-sizing: border-box;
     }
 
-    bo*y {
-      font-family: "MS Mincho"* "Hiragino Mincho ProN", sans-seri*;
+    body {
+      font-family: "MS Mincho", "Hiragino Mincho ProN", sans-serif;
       text-align: center;
-      *argin: 0;
-      padding: 40px 16px*
+      margin: 0;
+      padding: 40px 16px;
       font-size: 24px;
-      line*height: 1.6;
+      line-height: 1.6;
     }
 
     .timer {
- *    font-family: "Let's go Digital*, sans-serif;
-      font-size: 64p*;
+      font-family: "Let's go Digital", sans-serif;
+      font-size: 64px;
       margin-bottom: 20px;
-     *min-height: 1.2em;
     }
 
-    .que*tion {
+    .question {
       font-size: 26px;
-    * margin: 0 auto 16px;
-      max-wi*th: 600px;
+      margin: 0 auto 16px;
+      max-width: 600px;
     }
 
-    .input-box {*      width: 100%;
-      max-width* 320px;
+    .input-box {
+      width: 100%;
+      max-width: 320px;
       font-size: 24px;
-   *  padding: 12px;
-      text-align:*center;
+      padding: 12px;
+      text-align: center;
     }
 
     button {
-      *ont-size: 24px;
-      padding: 12p* 32px;
+      font-size: 24px;
+      padding: 12px 32px;
       min-height: 52px;
-   *  margin-top: 14px;
-      color: b*ack;
-      background-color: white*
+      margin-top: 14px;
+      color: black;
+      background-color: white;
       border: 2px solid black;
-  *   border-radius: 6px;
+      border-radius: 6px;
     }
 
-    *message-black {
-      font-size: 2*px;
+    .message-black {
+      font-size: 26px;
       margin: 16px auto 0;
-   *  max-width: 600px;
-      color: b*ack;
+      max-width: 600px;
+      color: black;
     }
 
     .error {
@@ -115,240 +115,208 @@
     class="error"
   ></div>
 
+<script>
 
-  <script>
+localStorage.setItem(
+  "currentPage",
+  "final.html"
+);
 
-    /*
-    =========================
-    基本設定
-    =========================
-    */
+let timerInterval = null;
 
-    localStorage.setItem(
-      "currentPage",
-      "final.html"
+/*
+=========================
+タイマー
+=========================
+*/
+
+function runTimer() {
+
+  if (
+    localStorage.getItem(
+      "bombCleared"
+    ) === "true"
+  ) {
+    return;
+  }
+
+  if (timerInterval !== null) {
+    clearInterval(timerInterval);
+  }
+
+  updateTimer();
+
+  timerInterval =
+    setInterval(
+      updateTimer,
+      1000
+    );
+}
+
+function updateTimer() {
+
+  if (
+    localStorage.getItem(
+      "bombCleared"
+    ) === "true"
+  ) {
+    return;
+  }
+
+  const savedEndTime =
+    localStorage.getItem(
+      "endTime"
     );
 
-    let timerInterval = null;
+  if (savedEndTime === null) {
 
+    window.location.href =
+      "index.html";
 
-    /*
-    =========================
-    タイマー
-    =========================
-    */
+    return;
+  }
 
-    function runTimer() {
+  const endTime =
+    Number(savedEndTime);
 
-      if (
-        localStorage.getItem(
-          "bombCleared"
-        ) === "true"
-      ) {
-        return;
-      }
+  const remaining =
+    Math.ceil(
+      (endTime - Date.now()) / 1000
+    );
 
+  if (remaining <= 0) {
 
-      if (timerInterval !== null) {
-        clearInterval(timerInterval);
-      }
-
-
-      updateTimer();
-
-
-      timerInterval =
-        setInterval(
-          updateTimer,
-          1000
-        );
+    if (timerInterval !== null) {
+      clearInterval(
+        timerInterval
+      );
     }
 
+    window.location.replace(
+      "gameover.html"
+    );
 
-    function updateTimer() {
+    return;
+  }
 
-      /*
-      解除済みなら何もしない
-      */
+  const minutes =
+    String(
+      Math.floor(
+        remaining / 60
+      )
+    ).padStart(2, "0");
 
-      if (
-        localStorage.getItem(
-          "bombCleared"
-        ) === "true"
-      ) {
-        return;
-      }
+  const seconds =
+    String(
+      remaining % 60
+    ).padStart(2, "0");
 
+  document.getElementById(
+    "timer"
+  ).textContent =
+    `${minutes}:${seconds}`;
+}
 
-      const savedEndTime =
-        localStorage.getItem("endTime");
+/*
+=========================
+初期化
+=========================
+*/
 
+if (
+  localStorage.getItem(
+    "bombCleared"
+  ) !== "true"
+) {
 
-      /*
-      タイマーが無ければ
-      indexへ戻る
-      */
+  runTimer();
+}
 
-      if (savedEndTime === n*ll) {
+/*
+=========================
+最終問題
+=========================
+*/
 
-        window.location.hre* =
-          "index.html";
+function checkFinal() {
 
-      * return;
-      }
+  const v =
+    document
+      .getElementById(
+        "finalInput"
+      )
+      .value
+      .trim();
 
+  if (v === "2070") {
 
-      const end*ime =
-        Number(savedEndTime)*
-
-
-      const remaining =
-       *Math.ceil(
-          (endTime - Da*e.now()) / 1000
-        );
-
-
-     *if (remaining <= 0) {
-
-        if (timerInterval !== null) {
-          clearInterval(timerInterval);
-        }
-
-        window.location.replace(
-          "gameover.html"
-        );
-
-        return;
-      }
-
-
-      const minutes =
-        String(
-          Math.floor(remaining / 60)
-        ).padStart(2, "0");
-
-
-      const seconds =
-        String(
-          remaining % 60
-        ).padStart(2, "0");
-
-
-      document.getElementById(
-        "timer"
-      ).textContent =
-        `${minutes}:${seconds}`;
-    }
-
-
-    /*
-    =========================
-    初期化
-    =========================
-    */
+    // タイマー停止
 
     if (
-      localStorage.getItem(
-        "bombCleared"
-      ) !== "true"
+      timerInterval !== null
     ) {
 
-      runTimer();
+      clearInterval(
+        timerInterval
+      );
     }
 
+    // 爆弾解除
 
-    /*
-    =========================
-    最終問題
-    =========================
-    */
+    localStorage.setItem(
+      "bombCleared",
+      "true"
+    );
 
-    function checkFinal() {
+    // 制限時間削除
 
-      const v =
-        document.getElementById(
-          "finalInput"
-        )
-        .value
-        .trim();
+    localStorage.removeItem(
+      "endTime"
+    );
 
+    document.getElementById(
+      "timer"
+    ).textContent = "";
 
-      if (v === "2070") {
+    document.getElementById(
+      "msg"
+    ).innerHTML = `
 
-        /*
-        タイマー停止
-        */
+      <div class="message-black">
+        爆弾解除　おめでとう
+      </div>
 
-        if (timerInterval !== null) {
-          clearInterval(timerInterval);
-        }
+      <div class="message-black">
+        だよねだよね！信じてたよ！
+      </div>
 
+      <div class="message-black">
+        …いやまあ解けて当然なんだけどさ、でもよかったー。
+      </div>
 
-        /*
-        爆弾解除を保存
-        */
+      <div class="message-black">
+        驚かせるようなことしてごめんね？
+      </div>
 
-        localStorage.setItem(
-          "bombCleared",
-          "true"
-        );
+      <div class="message-black">
+        また改めて□は送るね～
+      </div>
 
+      <div class="message-black">
+        次はもっと難しくするね！
+      </div>
+    `;
 
-        /*
-        解除した瞬間の残り時間を
-        以後使わないため削除
-        */
+    document.getElementById(
+      "err"
+    ).textContent = "";
 
-        localStorage.removeItem*
-          "endTime"
-        );
+  } else {
 
+    document.getElementById(
+      "msg"
+    ).textContent = "
 
-*       document.getElementById(
-  *       "timer"
-        ).textConte*t = "";
-
-
-        document.getElem*ntById(
-          "msg"
-        ).*nnerHTML = `
-
-          <div class*"message-black">
-            爆弾解除　*めでとう
-          </div>
-
-          <div class="message-black">
-            だよねだよね！信じてたよ！
-          </div>
-
-          <div class="message-black">
-            …いやまあ解けて当然なんだけどさ、でもよかったー。
-          </div>
-
-          <div class="message-black">
-            驚かせるようなことしてごめんね？
-          </div>
-
-          <div class="message-black">
-            また改めて□は送るね～
-          </div>
-
-          <div class="message-black">
-            次はもっと難しくするね！
-          </div>
-        `;
-
-
-        document.getElementById(
-          "err"
-        ).textContent = "";
-
-
-      } else {
-
-        document.getElementById(
-          "msg"
-        ).textContent = "";
 
 
         document.getElementById(
